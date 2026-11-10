@@ -18,9 +18,9 @@ model and phases.
 |---|---|
 | `agent/` | iMessage agent (Bun + [Spectrum](https://photon.codes/docs/spectrum-ts)), owner-only |
 | `supabase/` | Postgres schema, RLS policies, seed data, pgTAP tests |
-| `routing/` | Routing: Valhalla client and indoor building graphs |
+| `routing/` | `/route` service: Valhalla outdoor + indoor building graphs |
 | `infra/valhalla/` | Local Valhalla (Docker) for pedestrian routing |
-| `ios/` | SwiftUI app (Google Maps SDK) |
+| `ios/` | SwiftUI app (MapKit now, Google Maps later via one file) |
 | `ml/` | Floor-estimation experiments (later) |
 | `docs/` | Plan, evaluation, session notes |
 
@@ -75,7 +75,7 @@ colima stop
 ## Secrets
 
 This repo is **public**. Real values live only in gitignored files (`.env`,
-`ios/Secrets.xcconfig`). Only `*.example` files are committed.
+`ios/Config/Secrets.xcconfig`). Only `*.example` files are committed.
 
 ## License
 
