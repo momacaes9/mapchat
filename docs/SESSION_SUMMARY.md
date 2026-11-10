@@ -12,7 +12,7 @@ for secrets, and the full history was scanned with gitleaks (clean).
 | **Supabase** | ✅ | 8 migrations, 7 pgTAP suites, **58 assertions pass**. Invite/share by phone or email, private Realtime pings with no coordinates, security hardening |
 | **iOS app** (`ios/`) | ✅ builds and launches in the Simulator | Email code / magic-link sign-in; Sharing tab (invite, accept, pause/resume, stop, exact/building, floor toggle, global pause); Map tab (me + friends, live via Realtime, "Route to …" with a no-stairs/normal/fastest toggle); background location + barometer uploads; MapKit behind `MapRendering`. **10 XCTests pass** |
 | **iMessage agent** (`agent/`) | ✅ with the mock messenger | "where is X?", "route to X", "tell me when X is approaching", "stop alerts", "who is sharing?". Owner-only by construction. **34 tests pass**. Live run against the local stack answered correctly and ignored a message from the roommate's number |
-| **CI** (`.github/workflows/ci.yml`) | ✅ written and pushed | Jobs: backend (Supabase + RLS + routing incl. `/route`), agent, iOS (macOS runner). Results: see "CI" below |
+| **CI** (`.github/workflows/ci.yml`) | ✅ **green on GitHub** (run 42926032314) | backend (Supabase + RLS + routing incl. `/route`) ✅, agent ✅, iOS build + tests on a macOS runner ✅ |
 | **Security review** | ✅ | `docs/SECURITY.md`: 8 issues fixed (incl. phone-number takeover and account enumeration), 9 remaining items listed |
 
 ### Test totals
