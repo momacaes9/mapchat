@@ -1,0 +1,40 @@
+# ---- Secrets: never commit ----
+.env
+.env.*
+!.env.example
+*.pem
+*.p8
+*.p12
+*.key
+*.mobileprovision
+GoogleService-Info.plist
+# iOS secrets config (copy Secrets.example.xcconfig -> Secrets.xcconfig)
+Secrets.xcconfig
+supabase/.temp/
+supabase/.branches/
+
+# ---- Node / Bun ----
+node_modules/
+dist/
+build/
+*.log
+.bun/
+coverage/
+
+# ---- Python ----
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# ---- Xcode / Swift ----
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.build/
+.swiftpm/
+
+# ---- OS / editors ----
+.DS_Store
+.idea/
+.vscode/
