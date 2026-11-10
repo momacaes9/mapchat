@@ -252,19 +252,22 @@ per-building parameters later.
 
 **Phase 2 — Repo setup**
 - [x] Monorepo, root `.gitignore`, agent scaffold
-- [ ] README, `LICENSE` (MIT), root `.env.example`
+- [x] README, `LICENSE` (MIT), root `.env.example`
 
-**Phase 3 — Backend (Supabase)** *(next after approval)*
-- [ ] `supabase init`, PostGIS, migrations for §5
-- [ ] RLS + `can_view()` + precision view; grant state machine (only the location owner can activate)
-- [ ] Seed: the 8 UNC buildings (footprints from OSM via Overpass script, `verified=false`)
-- [ ] pgTAP tests: a stranger can't read; pending, paused and revoked can't read; the viewer can't self-activate a grant; the viewer can't write others' locations; precision snapping
-- [ ] Runs locally via `supabase start`; no hosted resources yet
+**Phase 3 — Backend (Supabase)** ✅ (local)
+- [x] `supabase init`, PostGIS, migrations for §5
+- [x] RLS + `can_view()` + `visible_friends()` precision read path; only the location owner can activate a grant
+- [x] Seed: the 8 UNC buildings (10 rows; Ram Village = 3 buildings), `verified=false`
+- [x] pgTAP tests (5 files, 40 assertions, all passing)
+- [x] Runs locally via `supabase start`; no hosted resources yet
+- Note: friends' locations are read only via `visible_friends()` (the raw tables are self-only), so live updates in Phase 5 will use Realtime **Broadcast** to signal "refetch" rather than `postgres_changes` on the raw table.
 
 **Phase 4 — Routing**
-- [ ] `infra/valhalla`: docker-compose + script that clips OSM to Chapel Hill and builds tiles
-- [ ] `routing/`: Valhalla client with the 3 profiles, indoor A*, stitcher, `/route` endpoint
-- [ ] Indoor graph templates for the 8 buildings + JSON schema validation
+- [x] `infra/valhalla`: docker-compose + North Carolina extract (clipping to Chapel Hill is an optional later optimisation)
+- [x] `routing/`: Valhalla client with the 3 profiles, indoor Dijkstra router
+- [ ] Outdoor↔indoor stitcher and `/route` HTTP endpoint
+- [x] Indoor graph format + validator + Davis Library example (unverified)
+- [ ] Indoor templates for the other buildings
 - [ ] Tests: `avoid_stairs` never yields a stairs edge; elevator chosen for a floor change; outdoor routes avoid `highway=steps` on fixture tiles
 
 **Phase 5 — iOS MVP**
