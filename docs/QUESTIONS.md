@@ -2,21 +2,21 @@
 
 Answer inline or in chat. Nothing here blocks the local work.
 
-1. **Docker runtime.** Docker Desktop was not found on this Mac (no app in
-   `/Applications`, no `docker` binary). To keep going I installed the free,
-   open-source **Colima** (`brew install colima docker docker-compose`) as the
-   Docker engine. Do you want to keep Colima, or install Docker Desktop? Both
-   are free for personal and education use, and the repo works with either.
+## Answered (2026-11-10)
+1. Docker: **keep Colima** (setup steps are in the README).
+2. Student Union: the seed now uses the full outline, OSM way/1420775578
+   (about 5,000 m², up from 1,006 m² for one wing), with the floor count (3)
+   taken from OSM relation/324644. It is still unverified.
+3. Ram Village: kept (buildings 1–3) for Fall 2027.
+4. Floor counts: Davis Library = 8 (official, UNC Libraries). Undergraduate
+   Library 3, Hinton James 10, Gardner 4, Phillips 3 and Student Union 3 come
+   from OSM. Hamilton Hall 7 and Ram Village 5 are **best guesses**. The source
+   is stored per building in `places.floors_source`, and every building stays
+   `verified = false`.
 
-2. **Student Union footprint looks small.** OSM matched way/772275983
-   "Frank Porter Graham Student Union" at about 1,006 m², which seems small for
-   that building and may be only one wing. Can you confirm on
-   openstreetmap.org, or tell me which entrance/wing you use? It's easy to
-   swap the OSM id in the seed script.
-3. **Ram Village.** OSM has Ram Village Buildings 1–3 inside the campus
-   bounding box. If you live in a building that isn't listed (e.g. 4 or 5),
-   tell me which one and I'll add it.
-4. **Floor counts.** OSM only lists levels for some buildings (Undergraduate
-   Library 3, Hinton James 10, Gardner 4, Phillips 3). Davis Library, Student
-   Union, Hamilton and Ram Village have no level count. All buildings are
-   `verified = false` until you check them.
+## Open
+5. **Your current dorm.** Your message said "My current dorm is [your current
+   dorm]", which is a template placeholder, so I couldn't tell which building
+   to add. Reply with the name and I'll add it to `TARGETS` in
+   `supabase/scripts/fetch_unc_buildings.ts` (there's a commented slot) and
+   regenerate the seed.

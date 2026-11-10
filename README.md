@@ -26,18 +26,50 @@ model and phases.
 
 ## Quick start (local, free)
 
-Requirements: Homebrew, a Docker runtime (Docker Desktop or Colima),
-[Bun](https://bun.sh), and the Supabase CLI.
+### 1. One-time setup (macOS)
+
+MapChat uses **Colima**, a free, open-source Docker engine, instead of
+Docker Desktop.
 
 ```sh
-# Backend
-supabase start          # local Postgres/Auth/Realtime in Docker
-supabase db reset       # apply migrations + seed
-supabase test db        # run the RLS tests
+brew install colima docker docker-compose supabase/tap/supabase xcodegen
+curl -fsSL https://bun.sh/install | bash       # Bun runtime
 
-# Agent
-cd agent && cp .env.example .env   # fill in values; .env is gitignored
-bun install && bun start
+# Start the Docker engine (4 CPUs, 8 GB RAM, 60 GB disk is enough for
+# Supabase + Valhalla). Run `colima start` again after every reboot.
+colima start --cpu 4 --memory 8 --disk 60
+docker context use colima
+```
+
+Notes:
+- Use `docker-compose` (with a hyphen); the `docker compose` plugin form is
+  not installed with Homebrew's Docker CLI.
+- Supabase analytics is disabled in `supabase/config.toml` because it needs
+  Docker Desktop's socket.
+- If `xcodebuild` says the developer directory is the Command Line Tools, run
+  `export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` (or
+  `sudo xcode-select -s /Applications/Xcode.app`).
+
+### 2. Run the stack
+
+```sh
+supabase start && supabase db reset && supabase test db   # DB + RLS tests
+
+./infra/valhalla/fetch_osm.sh                              # NC map extract (~430 MB, once)
+docker-compose -f infra/valhalla/docker-compose.yml up -d  # routing engine on :8002
+
+cd routing && bun install && bun test                      # routing + /route tests
+SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_ANON_KEY=<from supabase status> bun src/server.ts
+
+cd ../agent && cp .env.example .env && bun install && bun test
+```
+
+### 3. Stop everything
+
+```sh
+supabase stop
+docker-compose -f infra/valhalla/docker-compose.yml down
+colima stop
 ```
 
 ## Secrets
