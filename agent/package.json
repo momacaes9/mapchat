@@ -15,5 +15,8 @@
   "devDependencies": {
     "typescript": "^5",
     "@types/bun": "latest"
+  },
+  "overrides": {
+    "@opentelemetry/core": "^2.8.0"
   }
 }

@@ -1,0 +1,94 @@
+# CI for every push and pull request. No deployment: nothing here uses
+# secrets, and the local Supabase stack's well-known dev keys stay inside
+# the runner.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Supabase RLS + routing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.1.0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - name: Start local Supabase (only the services the tests need)
+        run: supabase start -x studio,imgproxy,vector,logflare,edge-runtime,storage-api,mailpit,postgres-meta
+
+      - name: RLS tests (pgTAP)
+        run: supabase test db
+
+      - name: Routing - install, typecheck, validate building graphs
+        working-directory: routing
+        run: |
+          bun install --frozen-lockfile
+          bunx tsc --noEmit
+          bun run validate-buildings
+
+      - name: Routing tests (incl. /route against local Supabase; Valhalla test self-skips)
+        working-directory: routing
+        run: |
+          eval "$(supabase status -o env | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=')"
+          SUPABASE_URL="$API_URL" SUPABASE_ANON_KEY="$ANON_KEY" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" bun test
+
+      - name: Dependency audit (routing)
+        working-directory: routing
+        run: bun audit
+
+  agent:
+    name: iMessage agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - working-directory: agent
+        run: |
+          bun install --frozen-lockfile
+          bunx tsc --noEmit
+          bun test
+      - name: Dependency audit (agent)
+        working-directory: agent
+        run: bun audit
+
+  ios:
+    name: iOS build + unit tests
+    runs-on: macos-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate Xcode project
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Build and test on the newest available iPhone simulator
+        working-directory: ios
+        run: |
+          DEVICE=$(xcrun simctl list devices available | grep -Eo 'iPhone [^(]+' | head -1 | sed 's/ *$//')
+          echo "Using simulator: $DEVICE"
+          xcodebuild test \
+            -project MapChat.xcodeproj -scheme MapChat \
+            -destination "platform=iOS Simulator,name=$DEVICE" \
+            -clonedSourcePackagesDirPath .spm \
+            CODE_SIGNING_ALLOWED=NO | tail -50
+          exit ${PIPESTATUS[0]}
