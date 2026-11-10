@@ -1,247 +1,280 @@
-# MapChat — MVP Plan
+# MapChat — MVP Plan (v2)
 
-A consent-based friend map for roommates and close friends on a college campus.
-One map shows everyone who has chosen to share with you, and an iMessage agent
-sends alerts ("Ana is approaching your building", "Ana went up 2 floors") and
-answers questions ("where is Pedro?").
+A consent-based friend map. **Core MVP:** show my roommate's real-time
+location next to mine on one map, and compute a **stair-aware walking route**
+between us, both outdoors and inside UNC Chapel Hill buildings, including
+which floor to go to and whether to take the elevator. An iMessage agent texts
+**only me** with alerts and answers.
+
+> v2 changes: the agent messages only the owner; real-time map plus routing is
+> the core; there is stair-aware outdoor and indoor routing; the campus is UNC
+> Chapel Hill; the map is Google Maps; the LLM is Claude; the license is MIT.
 
 ---
 
-## 1. Hard constraints (and what they rule out)
+## 1. Decisions (locked)
+
+| Topic | Decision |
+|---|---|
+| Map | **Google Maps SDK for iOS.** You create the Google Cloud billing account yourself (guide in §9); I never create it. |
+| Text understanding | **Claude** (Anthropic API). You add `ANTHROPIC_API_KEY` to `agent/.env` yourself. |
+| License | **MIT** |
+| Campus | **UNC Chapel Hill**. Seed buildings: Davis Library, Undergraduate Library, Student Union, Ram Village, Hinton James, Gardner Hall, Phillips Hall, Hamilton Hall. |
+| iMessage recipients | **Only the owner's number** (`OWNER_PHONE`). The agent never messages the roommate or anyone else. |
+
+## 2. Hard constraints
 
 | Constraint | Consequence |
 |---|---|
-| Apple Find My / iMessage expose **no** API for other people's locations. | Every sharer installs the MapChat iOS app, which reports to our backend. We never scrape Find My, the Messages database, or `chat.db`. |
-| Sharing is opt-in and revocable. | Grants are explicit, per-viewer, pausable, deletable. The sharer is notified when someone sets an alert on them. |
-| iMessage goes through Photon (Spectrum). | `agent/` uses `spectrum-ts` + `@spectrum-ts/imessage` (cloud provider). Method names come from the bundled skill docs in `agent/.agents/skills/spectrum/`, never guessed. |
-| Floor = barometer, not vision. | `CMAltimeter` relative altitude + `CLLocation.floor` when Apple provides it. |
-
-**Pins shared in iMessage (optional, to verify).** When someone taps "Send My
-Current Location" in iMessage, the recipient gets a one-time location pin, not
-live tracking. If Spectrum delivers that pin to the agent as an `attachment`
-(a `.loc.vcf` file), the agent could treat it as an explicit one-time check-in.
-We will test this in Phase 5; until then it is an unverified stretch goal.
+| Find My / iMessage expose no API for other people's locations. | Both phones run the MapChat iOS app, which reports to our backend. No scraping of Find My or `chat.db`. |
+| Opt-in and revocable. | The roommate explicitly accepts in the app and can **pause** or **stop** at any time. RLS enforces it. |
+| iMessage via Photon (Spectrum). | `agent/` uses `spectrum-ts` + `@spectrum-ts/imessage`. Method names come from `agent/.agents/skills/spectrum/`, never guessed. |
+| Floor = barometer. | `CMAltimeter` + `CLLocation.floor`. No computer vision. |
 
 ---
 
-## 2. Architecture
+## 3. Architecture
 
 ```
- ┌──────────────────────┐        ┌───────────────────────────────┐
- │ iOS app (SwiftUI)    │  HTTPS │ Supabase                      │
- │ - Sign in (phone OTP)│───────▶│ Postgres + PostGIS + RLS      │
- │ - Google Maps map    │◀───────│ Auth (phone OTP)              │
- │ - Sharing controls   │ Realtime│ Realtime (locations channel) │
- │ - Background loc +   │        │ Edge Function: ingest_location│
- │   CMAltimeter        │        └──────────────┬────────────────┘
- └──────────────────────┘                       │ DB webhook / Realtime
-                                                ▼
-                               ┌────────────────────────────────┐
-   iMessage  ◀──── Photon ────▶│ agent/ (Bun + spectrum-ts)     │
-   (user)       Spectrum Cloud │ - proximity + floor alerts     │
-                               │ - NL query → LLM → JSON intent │
-                               │ - answers from DB only         │
-                               │ - Google Maps links in replies │
-                               └────────────────────────────────┘
-                                                │
-                               ┌────────────────────────────────┐
-                               │ ml/ (Python, later phase)      │
-                               │ pressure → floor estimator     │
-                               └────────────────────────────────┘
+ ┌──────────────── iOS app (both phones) ────────────────┐
+ │ Google Maps view: me + roommate (Realtime)            │
+ │ Route polyline + step list ("elevator to floor 3")    │
+ │ Background location + CMAltimeter → ingest            │
+ │ Sharing controls: accept / pause / stop               │
+ └───────────┬──────────────────────────────┬────────────┘
+             │ Supabase SDK                 │ HTTPS  GET /route
+             ▼                              ▼
+ ┌───────────────────────────┐   ┌────────────────────────────────┐
+ │ Supabase                  │   │ routing/ (Bun + TS service)    │
+ │ Postgres + PostGIS + RLS  │◀──│ outdoor: Valhalla pedestrian   │
+ │ Auth (phone OTP)          │   │ indoor:  building graphs (A*)  │
+ │ Realtime: latest_locations│   │ stitches outdoor + indoor legs │
+ └───────────┬───────────────┘   └───────────────┬────────────────┘
+             │ Realtime                          │
+             ▼                                   │
+ ┌───────────────────────────┐                   │
+ │ agent/ (Bun + spectrum-ts)│───────────────────┘
+ │ texts ONLY OWNER_PHONE    │  ◀── iMessage ──▶ me
+ └───────────────────────────┘
+        ┌──────────────────────┐
+        │ Valhalla (Docker),   │  OSM extract clipped to Chapel Hill
+        │ tiles built locally  │
+        └──────────────────────┘
 ```
 
-### Map: Google Maps (as you asked), with MapKit as the fallback
-- **iOS map:** Google Maps SDK for iOS (via Swift Package Manager). It needs an
-  API key restricted to the app's bundle ID. Dynamic maps in the mobile SDK
-  have no per-load charge, but Google still requires a billing account on the
-  Cloud project. **I will ask before you enable billing.**
-- **iMessage replies:** universal Google Maps links
-  (`https://www.google.com/maps/search/?api=1&query=LAT,LNG`). They need no key
-  and cost nothing, and they open in the Google Maps app.
-- **Place names ("near Butler Library"):** we start with our own `places` table
-  (campus buildings plus each user's saved "home"), which is free and exact.
-  Google Geocoding/Places is optional later because it is billed per request.
-- MapKit stays a one-file swap if you'd rather avoid a Google Cloud billing
-  account.
-
-### Repo layout (monorepo)
+### Repo layout
 ```
 mapchat/
-  agent/      Bun + spectrum-ts iMessage agent (scaffolded by create-spectrum-project)
-  supabase/   migrations, RLS policies, seed, pgTAP tests, edge functions
-  ios/        Xcode project (SwiftUI)
-  ml/         Python floor estimator (later)
-  docs/       PLAN.md, PRIVACY.md
+  agent/      iMessage agent (owner-only)
+  routing/    routing service: Valhalla client + indoor graph + stitcher
+  routing/buildings/<slug>.json   indoor graphs, one per building
+  supabase/   migrations, RLS, seed, pgTAP tests
+  ios/        SwiftUI app
+  ml/         floor estimator (later)
+  infra/valhalla/  docker-compose + tile-build script
+  docs/
 ```
 
 ---
 
-## 3. Data model (Postgres, `public` schema)
+## 4. Routing (stair-aware)
+
+### 4.1 Outdoor: comparison
+
+| | **Google Routes API (`WALK`)** | **Valhalla (`pedestrian` costing, self-hosted)** |
+|---|---|---|
+| Avoid or penalize stairs | **No.** The only walking route option is `avoidIndoor`. Nothing covers stairs or steps. | **Yes:** `step_penalty` (seconds added per transition onto steps); `type: "wheelchair"` raises it further. |
+| Elevators | No control | `elevator_penalty` |
+| Hills | No | `use_hills` (0 = avoid, 1 = don't care), relevant on UNC's slopes |
+| Path preferences | No | `walkway_factor`, `sidewalk_factor`, `alley_factor`, `use_lit` (night walks) |
+| Data quality on campus | Google's network is good, but you can't fix it | OSM: UNC paths and `highway=steps` are mapped, and **we can fix OSM ourselves** |
+| Indoor integration | Opaque, can't stitch to our graph | Same graph concepts as our indoor model, so stitching is easy |
+| Cost | Compute Routes Essentials: 10,000 free requests/month, then **$5.00 per 1,000** | Free (open source). Runs locally in Docker; hosting later is a small VM (§8) |
+| Effort | Lowest (one HTTPS call) | Medium (Docker + build tiles for a Chapel Hill clip, ~minutes) |
+
+**Recommendation: Valhalla.** Avoiding stairs is the core requirement, and
+Google's walking mode can't do it. Valhalla can, and it can also avoid hills.
+We clip OpenStreetMap to Chapel Hill, so the tiles are tiny and fit a ~512 MB
+container. Routes are drawn as polylines **on Google Maps**, which keeps the
+Google basemap you asked for. A Google Routes fallback can sit behind the same
+interface later if Valhalla is down.
+
+Routing profiles exposed by the API:
+- `default`: `step_penalty` ≈ 30 s (mild aversion)
+- `avoid_stairs`: high `step_penalty` (≈ 3600 s), prefer elevators/ramps; indoor stairs edges disabled
+- `fastest`: `step_penalty` 0
+
+### 4.2 Indoor: building graphs
+
+Each building is a JSON graph in `routing/buildings/<slug>.json`:
+
+```jsonc
+{
+  "building": "davis-library",
+  "floors": [{ "level": 1, "label": "1", "height_m": 4.2 }, ...],
+  "nodes": [
+    { "id": "ent-main",   "floor": 1, "kind": "entrance", "lat": ..., "lng": ..., "osm_entrance": true },
+    { "id": "elev-A-1",   "floor": 1, "kind": "elevator", "core": "A" },
+    { "id": "stair-N-1",  "floor": 1, "kind": "stairs",   "core": "N" },
+    { "id": "hall-1",     "floor": 1, "kind": "corridor" }
+  ],
+  "edges": [
+    { "a": "ent-main", "b": "hall-1",   "type": "corridor", "meters": 20 },
+    { "a": "elev-A-1", "b": "elev-A-3", "type": "elevator", "seconds": 45 },
+    { "a": "stair-N-1","b": "stair-N-2","type": "stairs",   "seconds": 20, "steps": 22 }
+  ]
+}
+```
+
+- **The MVP granularity is coarse on purpose**: entrances, one corridor hub
+  per floor, each stair core and each elevator per floor. That's enough for
+  "enter by the main entrance, take elevator A to floor 3".
+- Algorithm: A* over the indoor graph with the same profile weights (stairs
+  edges cost `step_penalty`, or are removed under `avoid_stairs`; elevator
+  edges carry a fixed wait plus a per-floor cost).
+- **Stitching:** I'll run Valhalla to *each* entrance of the destination
+  building (≤ 4), add the indoor cost from that entrance to the roommate's
+  floor, and pick the minimum. Same thing reversed if *I'm* inside a building.
+- **Data:** building footprints and entrances come from OSM via Overpass
+  (script, no hand-typed coordinates). **Floor counts, elevator and stair cores
+  are not in OSM for most of these buildings**, so each graph starts as a
+  template marked `"verified": false` and you confirm it on a walk-through.
+  Ram Village is several buildings, so it becomes one graph per building.
+- Output = a step list: outdoor maneuvers from Valhalla + indoor steps
+  (`"Enter Davis Library (main entrance)"`, `"Take elevator A to floor 3"`).
+
+### 4.3 Routing API
+`GET /route?from=me&to=roommate&profile=avoid_stairs` →
+`{ polyline, duration_s, distance_m, steps[], indoor: {building, target_floor} }`.
+Auth uses the caller's Supabase JWT. The service re-checks `can_view` before
+reading the roommate's location, so the route endpoint can't leak anything RLS
+would hide.
+
+---
+
+## 5. Data model (Postgres)
 
 ```sql
-profiles (
-  id uuid pk references auth.users,
-  display_name text not null,
-  phone_e164 text unique,            -- links iMessage sender to account
-  home_place_id uuid null references places,
-  sharing_paused boolean default false,
-  created_at timestamptz default now()
-)
-
-share_grants (                         -- one row = "owner lets viewer see me"
-  id uuid pk,
-  owner_id uuid references profiles,   -- the person being located
-  viewer_id uuid references profiles,
-  status text check (status in ('pending','active','paused','revoked')),
-  precision text check (precision in ('exact','building','campus')) default 'exact',
-  allow_floor boolean default true,
-  created_at, updated_at,
-  unique (owner_id, viewer_id)
-)
-
-locations (                            -- append-only history, short retention
-  id bigint identity pk,
-  user_id uuid references profiles,
-  geog geography(Point,4326) not null,
-  accuracy_m real,
-  floor_apple int null,                -- CLLocation.floor.level
-  rel_altitude_m real null,            -- CMAltimeter since building entry
-  pressure_kpa real null,
-  floor_est int null,                  -- our estimate
-  place_id uuid null references places,
-  recorded_at timestamptz not null
-)
-latest_locations  -- view (or table kept fresh by trigger): one row per user
-
-places (                               -- campus buildings + user homes
-  id uuid pk, name text, kind text check (kind in ('building','home')),
-  owner_id uuid null,                  -- set for 'home'
-  geom geography(Polygon,4326), floors int null, floor_height_m real null,
-  ground_altitude_m real null
-)
-
-alerts (                               -- "tell me when Ana gets home"
-  id uuid pk,
-  watcher_id uuid references profiles,
-  target_id  uuid references profiles,
-  kind text check (kind in ('approaching_me','arrives_place','floor_change')),
-  place_id uuid null, radius_m int default 150,
-  one_shot boolean default true,
-  active boolean default true,
-  target_notified_at timestamptz null, -- sharer was told this alert exists
-  created_at, last_fired_at
-)
-
-alert_events (id, alert_id, fired_at, payload jsonb)   -- audit and dedupe
-floor_eval   (id, user_id, place_id, floor_est, floor_truth, method, recorded_at)
+profiles      (id → auth.users, display_name, phone_e164, sharing_paused bool, created_at)
+share_grants  (id, owner_id, viewer_id, status pending|active|paused|revoked,
+               precision exact|building, allow_floor bool, created_at, updated_at,
+               unique(owner_id, viewer_id))
+locations     (id, user_id, geog Point, accuracy_m, floor_apple, rel_altitude_m,
+               pressure_kpa, floor_est, place_id, recorded_at)      -- 7-day retention
+latest_locations  -- one row per user, maintained by trigger; Realtime publishes this
+places        (id, slug, name, kind building|home, owner_id null, geom Polygon,
+               floors int null, floor_height_m, ground_altitude_m, verified bool)
+alerts        (id, watcher_id, target_id, kind approaching_me|arrives_place|floor_change,
+               place_id, radius_m, one_shot, active, created_at, last_fired_at)
+alert_events  (id, alert_id, fired_at, payload jsonb)
+floor_eval    (id, user_id, place_id, floor_est, floor_truth, method, recorded_at)
 ```
 
----
-
-## 4. Privacy model
-
-1. **Default deny.** RLS on every table. A viewer can read a `locations` row
-   only if an `active` grant `owner → viewer` exists **and** the owner has not
-   paused sharing. This runs in one `security definer` function,
-   `can_view(owner, viewer)`, which every policy uses.
-2. **Precision downgrade.** If the grant is `building` or `campus`, the
-   viewer reads through a view that snaps coordinates to the place centroid or
-   to null. The raw table is never exposed to them.
-3. **Pause / stop.** Pause = `profiles.sharing_paused` (global) or
-   `share_grants.status='paused'` (per person). Stop = `revoked`. Both take
-   effect immediately in RLS, and the app also stops sending GPS while globally
-   paused.
-4. **Alert transparency.** An insert into `alerts` triggers an iMessage to the
-   target: "Pedro set an alert for when you get home. Reply STOP-ALERTS to
-   block." The target can block alerts per watcher.
-5. **Agent is not a superuser.** The agent uses the service role only to
-   resolve the sender's phone to a profile. Every location read then goes
-   through `get_visible_location(viewer_id, target_name)`, which applies the
-   same `can_view` check. The LLM only produces a JSON intent and never sees raw
-   data it shouldn't relay.
-6. **Retention.** History older than 7 days is deleted by a `pg_cron` job, and
-   floor-eval data is kept anonymized.
-7. **Secrets.** `.env` and `Secrets.xcconfig` are gitignored, and only
-   `*.example` files are committed. **This repo is public**, so this rule
-   is critical.
+`watcher_id` is always the owner in the MVP. Only the agent delivers alerts,
+and it sends them only to `OWNER_PHONE`.
 
 ---
 
-## 5. Agent (iMessage) behavior
+## 6. Privacy model
 
-- **Inbound text → intent.** A small LLM call with a strict JSON schema:
-  `{intent: "where_is"|"alert_arrive"|"alert_approach"|"list_friends"|"pause"|"resume"|"help", target?: string, place?: string}`.
-  Unknown → help text. A regex fast path handles "where is X" without an LLM call.
-- **Answers come from the DB only:** "Ana is in Butler Library, 3rd floor (2 min ago) → <maps link>".
-  When the data is stale (>15 min), the reply says so.
-- **Proximity:** on each new location, find active `approaching_me` alerts and
-  grants where the distance to the watcher's latest location crosses the radius
-  inward (hysteresis: enter at R, re-arm at 1.5R, 10 min cooldown).
-- **Floor change:** fires when `floor_est` changes by ≥1 while inside the same
-  place and is stable for 20 s.
-- Photon Free/Pro uses a **shared line pool** and requires recipients to be
-  registered as project users in the Photon dashboard. That is fine for the
-  MVP (you plus roommates). A dedicated number is a paid Business plan, and
-  **I will ask before using one**.
-
----
-
-## 6. Floor estimation
-
-- On building entry (geofence enter or GPS accuracy degrading inside a
-  `places` polygon), call `CMAltimeter.startRelativeAltitudeUpdates` and zero
-  the baseline. Seed it with `CLLocation.floor` if present, otherwise ground
-  floor = the entry floor.
-- `floor = entry_floor + round(Δaltitude / floor_height_m)` with a ±0.8 m dead
-  band to absorb weather drift. The baseline is reset on each exit.
-- Every estimate, plus a user-confirmed "I'm on floor N" tap, goes to
-  `floor_eval`. That logged ground truth is what measures accuracy.
-- Phase 6+: the Python `ml/` module fits per-building floor heights and
-  ground-floor reference pressure from the logged data.
+1. **Default deny.** RLS everywhere. Reads of another user's location pass
+   through `can_view(owner, viewer)`: an active grant, the owner not paused,
+   and the grant not paused or revoked.
+2. **Opt-in.** A grant starts `pending`. Only the **owner of the location**
+   (the roommate) can move it to `active`, and RLS enforces who may update
+   which column.
+3. **Pause / stop.** A global pause (the app also stops GPS uploads), a
+   per-grant pause, or revoked. All take effect on the next read. Revoking also
+   deactivates alerts targeting that person.
+4. **Alert transparency without messaging the roommate.** The roommate sees
+   every alert about them **in the app** (a "Who has alerts on me" screen) and
+   can delete any of them. The agent never texts them.
+5. **Precision.** `building` precision snaps coordinates to the building
+   centroid and hides the floor if `allow_floor = false`.
+6. **Agent least privilege.** The agent identifies the sender. **If the sender
+   isn't `OWNER_PHONE`, it ignores the message and never replies.** Every send
+   goes through one `sendToOwner()` wrapper that asserts the recipient, so
+   there is no other send path, and a unit test covers it.
+7. **Retention.** Location history is deleted after 7 days (`pg_cron`).
+8. **Secrets.** The repo is public. Only `*.example` files are committed, and
+   `.env` / `Secrets.xcconfig` are gitignored.
 
 ---
 
-## 7. Phase-by-phase tasks
+## 7. Agent (owner-only)
 
-**Phase 1 — Plan** *(this doc)* ✅ → waiting for your review.
+- Inbound from the owner → Claude parses it into strict JSON
+  `{intent: where_is|route_to|alert_approach|alert_arrive|pause_alerts|help, target?, place?, profile?}`.
+  A regex fast path handles common phrases. **Facts come from the DB, never
+  from the model.**
+- `where_is` → "Ana is in Davis Library, floor 3 (1 min ago)" plus a Google
+  Maps link.
+- `route_to` → "8 min walk, no stairs: … take elevator A to floor 3" plus a
+  link to the in-app route.
+- Alerts to the owner: approaching (radius around me, hysteresis), arrives at
+  a place, floor change (stable ≥ 20 s).
+- Photon free/pro shared pool: only the owner must be registered as a project
+  user. That keeps the MVP on the free plan.
+
+## 8. Floor estimation
+On building entry: zero `CMAltimeter`, seed from `CLLocation.floor` if present,
+then `floor = entry_floor + round(Δalt / floor_height_m)` with a ±0.8 m dead
+band. Manual "I'm on floor N" confirmations go to `floor_eval`. `ml/` fits
+per-building parameters later.
+
+---
+
+## 9. Cost overview and Google Cloud billing guide (you do it)
+
+| Item | Cost |
+|---|---|
+| Supabase | Free tier (local dev is free; one hosted free project) |
+| Photon | Free/Pro shared pool. A dedicated number is the paid Business plan, so I'll ask first |
+| Google Maps SDK for iOS | Free for map loads, but **a billing account is required** to get a key |
+| Valhalla | Free locally. Hosting is a small VM later; **I'll quote and ask before any hosting** |
+| Anthropic API | Pay-per-use. Intent parsing is a few hundred tokens per text, about cents per month for one user |
+| Apple Developer Program | $99/year, needed to run on your roommate's phone beyond 7-day dev builds / TestFlight |
+
+**Google Cloud steps (you run them):**
+1. console.cloud.google.com → create project `mapchat`.
+2. Billing → create a billing account (card required) → link it to the project.
+3. Billing → Budgets & alerts → a budget of e.g. **$5/month** with email alerts at 50/90/100 %.
+4. APIs & Services → Library → enable **Maps SDK for iOS** only.
+5. Credentials → Create API key → restrict it to **iOS apps** with your bundle ID
+   (e.g. `edu.unc.mapchat`), API restriction = Maps SDK for iOS.
+6. Paste the key into `ios/Secrets.xcconfig` (gitignored), never into code.
+
+---
+
+## 10. Phases
+
+**Phase 1 — Plan** ✅ (v2 awaiting approval)
 
 **Phase 2 — Repo setup**
-- [x] Use the existing `momacaes9/mapchat` repo (public), monorepo layout
-- [x] Root `.gitignore` covering `.env`, keys, `Secrets.xcconfig`
-- [x] Scaffold `agent/` with `create-spectrum-project` (iMessage provider)
-- [ ] README, LICENSE (MIT unless you prefer otherwise), root `.env.example`
+- [x] Monorepo, root `.gitignore`, agent scaffold
+- [ ] README, `LICENSE` (MIT), root `.env.example`
 
-**Phase 3 — Backend (Supabase)**
-- [ ] `supabase init`, migrations for the tables above + PostGIS
-- [ ] RLS policies + `can_view()` + precision views
-- [ ] pgTAP tests: a stranger can't read; a revoked or paused grant can't read; precision is enforced; a viewer can't write someone else's location
-- [ ] Edge function `ingest_location` (validates, sets `place_id`)
-- [ ] Runs locally with `supabase start` (free). Creating a hosted project uses the free tier; **I'll confirm before any paid tier.**
+**Phase 3 — Backend (Supabase)** *(next after approval)*
+- [ ] `supabase init`, PostGIS, migrations for §5
+- [ ] RLS + `can_view()` + precision view; grant state machine (only the location owner can activate)
+- [ ] Seed: the 8 UNC buildings (footprints from OSM via Overpass script, `verified=false`)
+- [ ] pgTAP tests: a stranger can't read; pending, paused and revoked can't read; the viewer can't self-activate a grant; the viewer can't write others' locations; precision snapping
+- [ ] Runs locally via `supabase start`; no hosted resources yet
 
-**Phase 4 — iOS MVP**
-- [ ] SwiftUI app, Supabase Swift SDK, phone-OTP sign-in
-- [ ] Invite by phone → pending grant → accept / decline
-- [ ] Google Maps view with all visible friends (Realtime updates)
-- [ ] Background location (significant-change + region monitoring to save battery), pause/stop controls
-- [ ] `Secrets.example.xcconfig` for the Supabase URL/anon key and Google Maps key
+**Phase 4 — Routing**
+- [ ] `infra/valhalla`: docker-compose + script that clips OSM to Chapel Hill and builds tiles
+- [ ] `routing/`: Valhalla client with the 3 profiles, indoor A*, stitcher, `/route` endpoint
+- [ ] Indoor graph templates for the 8 buildings + JSON schema validation
+- [ ] Tests: `avoid_stairs` never yields a stairs edge; elevator chosen for a floor change; outdoor routes avoid `highway=steps` on fixture tiles
 
-**Phase 5 — Photon agent**
-- [ ] Replace the echo loop: sender phone → profile lookup
-- [ ] "where is X?" → DB → reply with a Google Maps link
-- [ ] Proximity alert worker (Realtime subscription on `locations`)
-- [ ] Alert-created notice to the target, plus STOP-ALERTS
-- [ ] Test whether iMessage "Send My Current Location" pins reach the agent
+**Phase 5 — iOS MVP**
+- [ ] Phone-OTP sign-in, invite → roommate accepts, pause/stop, "alerts on me" screen
+- [ ] Google Maps with me + roommate (Realtime), route polyline + step list + profile toggle
+- [ ] Background location + altimeter upload
 
-**Phase 6 — Floor estimation**
-- [ ] `CMAltimeter` pipeline in iOS, floor fields in the ingest payload
-- [ ] "X went up 2 floors" alerts
-- [ ] `floor_eval` logging + accuracy report script in `ml/`
+**Phase 6 — Agent (owner-only)**
+- [ ] `sendToOwner()` guard + tests, ignore all non-owner senders
+- [ ] Claude intent parser, `where_is`, `route_to`, proximity/arrival/floor alerts
 
----
-
-## 8. Open questions for you
-
-1. **Map:** Google Maps SDK (needs a Google Cloud billing account, but mobile dynamic maps are free) or MapKit (no key)? The iMessage replies use Google Maps links either way.
-2. **LLM for intent parsing:** Claude (Anthropic API key) is what I'd default to. Any preference?
-3. **License:** MIT OK?
-4. **Campus:** which campus? I'll seed `places` with its buildings.
+**Phase 7 — Floor estimation and evaluation**
+- [ ] Altimeter pipeline, `floor_eval` logging, `ml/` estimator and accuracy report
