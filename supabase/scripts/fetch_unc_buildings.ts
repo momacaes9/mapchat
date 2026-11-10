@@ -16,15 +16,46 @@ const BBOX = "35.895,-79.065,35.920,-79.035";
 
 // Target buildings: slug, display name, regex matched against the OSM name.
 // Ram Village is several buildings in OSM, so every match becomes its own row.
-const TARGETS: { slug: string; name: string; match: RegExp; multi?: boolean }[] = [
-  { slug: "davis-library", name: "Davis Library", match: /davis library/i },
+//
+// `prefer` pins a specific OSM object when a building is split into parts
+// (the Student Union relation is the outline that contains all its parts).
+// `floors` overrides the level count; `source` records where it came from.
+// Anything not from an official UNC source is a best guess and stays
+// verified = false.
+type Target = {
+  slug: string;
+  name: string;
+  match: RegExp;
+  multi?: boolean;
+  prefer?: { type: "way" | "relation"; id: number };
+  floors?: { n: number; source: string };
+};
+const TARGETS: Target[] = [
+  {
+    slug: "davis-library", name: "Davis Library", match: /davis library/i,
+    floors: { n: 8, source: "official: library.unc.edu (Davis floors 1-8)" },
+  },
   { slug: "undergraduate-library", name: "Undergraduate Library", match: /undergraduate library/i },
-  { slug: "student-union", name: "Student Union", match: /(student union|carolina union|frank porter graham)/i },
-  { slug: "ram-village", name: "Ram Village", match: /ram village/i, multi: true },
+  {
+    slug: "student-union", name: "Student Union", match: /(student union|carolina union|frank porter graham)/i,
+    // way/1420775578 is the full outline; the parts are separate building:part ways.
+    // Its level count lives on the 3D-building relation 324644.
+    prefer: { type: "way", id: 1420775578 },
+    floors: { n: 3, source: "osm:building:levels on relation/324644" },
+  },
+  {
+    slug: "ram-village", name: "Ram Village", match: /ram village/i, multi: true,
+    floors: { n: 5, source: "best guess (no official source found)" },
+  },
   { slug: "hinton-james", name: "Hinton James", match: /hinton james/i },
   { slug: "gardner-hall", name: "Gardner Hall", match: /^gardner hall/i },
   { slug: "phillips-hall", name: "Phillips Hall", match: /^phillips hall/i },
-  { slug: "hamilton-hall", name: "Hamilton Hall", match: /^hamilton hall/i },
+  {
+    slug: "hamilton-hall", name: "Hamilton Hall", match: /^hamilton hall/i,
+    floors: { n: 7, source: "best guess (no official source found)" },
+  },
+  // Current dorm: waiting for the name (docs/QUESTIONS.md). Add it like:
+  // { slug: "my-dorm", name: "My Dorm", match: /^exact osm name/i },
 ];
 
 const ENDPOINTS = [
@@ -76,6 +107,17 @@ function rings(el: OsmEl): string[] {
     .map((m) => toRing(m.geometry!));
 }
 
+/** Rough planar area in degrees², only used to rank candidate outlines. */
+function approxArea(el: OsmEl): number {
+  const pts = el.type === "way" ? [el.geometry ?? []]
+    : (el.members ?? []).filter((m) => m.role === "outer").map((m) => m.geometry ?? []);
+  return pts.reduce((sum, ring) => {
+    let a = 0;
+    for (let i = 0; i < ring.length - 1; i++) a += ring[i]!.lon * ring[i + 1]!.lat - ring[i + 1]!.lon * ring[i]!.lat;
+    return sum + Math.abs(a / 2);
+  }, 0);
+}
+
 const sqlStr = (s: string) => `'${s.replaceAll("'", "''")}'`;
 
 const names = TARGETS.map((t) => t.match.source.replace(/^\^/, "")).join("|");
@@ -96,18 +138,25 @@ for (const t of TARGETS) {
     missing.push(t.name);
     continue;
   }
-  const chosen = t.multi ? hits : [hits[0]!];
+  const pinned = t.prefer && hits.find((e) => e.type === t.prefer!.type && e.id === t.prefer!.id);
+  // Otherwise prefer the biggest outline (a whole building over one of its parts).
+  const byArea = [...hits].sort((a, b) => approxArea(b) - approxArea(a));
+  const chosen = t.multi ? hits : [pinned ?? byArea[0]!];
   chosen.forEach((el, i) => {
     const slug = t.multi && chosen.length > 1 ? `${t.slug}-${i + 1}` : t.slug;
     const name = t.multi ? el.tags.name! : t.name;
-    const levels = Number.parseInt(el.tags["building:levels"] ?? "", 10);
+    const osmLevels = Number.parseInt(el.tags["building:levels"] ?? "", 10);
+    const floors = t.floors?.n ?? (Number.isFinite(osmLevels) ? osmLevels : null);
+    const floorsSource = t.floors?.source ?? (floors !== null ? `osm:building:levels on ${el.type}/${el.id}` : null);
     const wkt = `SRID=4326;MULTIPOLYGON(${rings(el).map((r) => `(${r})`).join(", ")})`;
+    // st_unaryunion merges overlapping parts into one outline.
+    const geom = `extensions.st_multi(extensions.st_unaryunion(extensions.st_makevalid(${sqlStr(wkt)}::extensions.geometry)))::extensions.geography`;
     rows.push(
-      `  (${sqlStr(slug)}, ${sqlStr(name)}, 'building', ${sqlStr(wkt)}, ` +
-        `${Number.isFinite(levels) ? levels : "null"}, ${sqlStr(el.type)}, ${el.id}, false)`,
+      `  (${sqlStr(slug)}, ${sqlStr(name)}, 'building', ${geom}, ` +
+        `${floors ?? "null"}, ${floorsSource ? sqlStr(floorsSource) : "null"}, ${sqlStr(el.type)}, ${el.id}, false)`,
     );
     console.log(`✓ ${slug.padEnd(24)} ← OSM ${el.type}/${el.id} "${el.tags.name}"` +
-      (Number.isFinite(levels) ? ` (${levels} levels)` : ""));
+      (floors !== null ? ` (${floors} floors: ${floorsSource})` : " (floors unknown)"));
   });
 }
 
@@ -115,7 +164,7 @@ const out = `-- GENERATED by supabase/scripts/fetch_unc_buildings.ts — do not 
 -- Building footprints © OpenStreetMap contributors (ODbL).
 -- verified = false: floors/entrances must be checked on site.
 ${missing.length ? `-- NOT FOUND in OSM: ${missing.join(", ")}\n` : ""}
-insert into public.places (slug, name, kind, geom, floors, osm_type, osm_id, verified) values
+insert into public.places (slug, name, kind, geom, floors, floors_source, osm_type, osm_id, verified) values
 ${rows.join(",\n")}
 on conflict (slug) do nothing;
 `;
