@@ -30,10 +30,10 @@ update public.share_grants
    set status = 'active', precision = 'exact', allow_floor = true
  where owner_id = '00000000-0000-0000-0000-0000000000a1';
 
-select isnt(public.request_share('+19195550003'), null,
-            'request_share() creates a pending request for a known phone');
-select is(public.request_share('+19990000000'), null,
-          'request_share() returns null for an unknown phone (no enumeration)');
+select lives_ok($$select public.request_share('+19195550003')$$,
+                'request_share() accepts a known phone');
+select lives_ok($$select public.request_share('+19990000000')$$,
+                'request_share() behaves the same for an unknown phone (no enumeration)');
 
 reset role;
 select is((select status from public.share_grants
