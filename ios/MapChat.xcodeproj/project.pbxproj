@@ -1,0 +1,541 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0959D63CBE719A11CCF130D7 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105248F0381C4522A22B6AF3 /* Models.swift */; };
+		0FEF18BF412AB8F06F0E1290 /* Polyline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457875211C47C3947F750C86 /* Polyline.swift */; };
+		31D591E12568AE019B0D84CF /* MapChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC14A37BD434EE6AC772F5C9 /* MapChatApp.swift */; };
+		374B1DE1F2AB1A88A7B8D666 /* MapKitMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B9FDB25BFA33B8D07E62AB /* MapKitMapView.swift */; };
+		4362DAD8C385CD88FA6389F5 /* RouteClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80625BA0079968FAB7243913 /* RouteClientTests.swift */; };
+		4BA919B68BAC1DD3491B2D23 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B8273FBAFCF82335811773 /* AppConfig.swift */; };
+		4FE7FC16594F122282680054 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D58D4EE96CAE3FF863B18D7F /* Supabase */; };
+		61CC052530A5651FE06425EF /* MapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9E74AEB3E7EFD7E6D47B4 /* MapModel.swift */; };
+		636DE8A5C262CC50D9CFDCDE /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E2A088D7A5BA20D81BD73B /* SignInView.swift */; };
+		6722542F21749CF787E2FCE5 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225BAF817CB8DC755640A7F5 /* SupabaseService.swift */; };
+		C320744A2DADC471F0B62EEE /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941DFE59680E503A3A8DB06B /* MapScreen.swift */; };
+		D28CB4CDCEA7C47AFDF500E6 /* SharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940B55225B05B99493F907D4 /* SharingView.swift */; };
+		D72DFA802414D2A0DFED8DCB /* ParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A122D588C76BBEA2D9566C1 /* ParsingTests.swift */; };
+		DCD937873E27E8AAFA0C4904 /* MapProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828AA4A4D3A077BE17C449DF /* MapProvider.swift */; };
+		E9B87318FE0606D0FD394D54 /* RouteClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7183358861EE38F227572A /* RouteClient.swift */; };
+		EFB9F542D8F2BA0239B5B7F9 /* LocationReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDFC137F75819DC5919F533B /* LocationReporter.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4F3EA8652346D45327CECB03 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFA7F0FB6732CB09FC3783FF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9F8FC8CB7D8844FCBCBCC78E;
+			remoteInfo = MapChat;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		105248F0381C4522A22B6AF3 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		121BC6ECDD58DC3009DB860F /* MapChatTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MapChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		142D04A829E630048C6B7B23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		225BAF817CB8DC755640A7F5 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
+		22E2A088D7A5BA20D81BD73B /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		29B9FDB25BFA33B8D07E62AB /* MapKitMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitMapView.swift; sourceTree = "<group>"; };
+		457875211C47C3947F750C86 /* Polyline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polyline.swift; sourceTree = "<group>"; };
+		61E9E74AEB3E7EFD7E6D47B4 /* MapModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapModel.swift; sourceTree = "<group>"; };
+		80625BA0079968FAB7243913 /* RouteClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteClientTests.swift; sourceTree = "<group>"; };
+		828AA4A4D3A077BE17C449DF /* MapProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapProvider.swift; sourceTree = "<group>"; };
+		86B8273FBAFCF82335811773 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		940B55225B05B99493F907D4 /* SharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingView.swift; sourceTree = "<group>"; };
+		941DFE59680E503A3A8DB06B /* MapScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapScreen.swift; sourceTree = "<group>"; };
+		9A122D588C76BBEA2D9566C1 /* ParsingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsingTests.swift; sourceTree = "<group>"; };
+		AA511CB3C76C5ACD8B47082E /* MapChat.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MapChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B77A860D10F974009F01548B /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
+		CDFC137F75819DC5919F533B /* LocationReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationReporter.swift; sourceTree = "<group>"; };
+		DB7183358861EE38F227572A /* RouteClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteClient.swift; sourceTree = "<group>"; };
+		FC14A37BD434EE6AC772F5C9 /* MapChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapChatApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B68E5E4423073B8B13C46210 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4FE7FC16594F122282680054 /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		22D0A76DC6EC19C876329012 /* MapChat */ = {
+			isa = PBXGroup;
+			children = (
+				5BF1B204FA6011F649B938CF /* App */,
+				9B47639660A07C5DE0BE9287 /* Location */,
+				C26A5F678A8AF0B05CBA3BD6 /* Map */,
+				244138BBE62E4669D4722AA5 /* Networking */,
+				C552F97898A80660FBAF9265 /* Resources */,
+				A74E9DE91950615F2671EB1D /* Views */,
+			);
+			path = MapChat;
+			sourceTree = "<group>";
+		};
+		244138BBE62E4669D4722AA5 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				105248F0381C4522A22B6AF3 /* Models.swift */,
+				DB7183358861EE38F227572A /* RouteClient.swift */,
+				225BAF817CB8DC755640A7F5 /* SupabaseService.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		44BA510A7E9CD2DB5502A5AC = {
+			isa = PBXGroup;
+			children = (
+				D3D0468782ED56B0613429CA /* Config */,
+				22D0A76DC6EC19C876329012 /* MapChat */,
+				684AF0EA169F47C2526C5660 /* MapChatTests */,
+				AF97B7AABB1A27449558D681 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5BF1B204FA6011F649B938CF /* App */ = {
+			isa = PBXGroup;
+			children = (
+				86B8273FBAFCF82335811773 /* AppConfig.swift */,
+				FC14A37BD434EE6AC772F5C9 /* MapChatApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		684AF0EA169F47C2526C5660 /* MapChatTests */ = {
+			isa = PBXGroup;
+			children = (
+				9A122D588C76BBEA2D9566C1 /* ParsingTests.swift */,
+				80625BA0079968FAB7243913 /* RouteClientTests.swift */,
+			);
+			path = MapChatTests;
+			sourceTree = "<group>";
+		};
+		9B47639660A07C5DE0BE9287 /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				CDFC137F75819DC5919F533B /* LocationReporter.swift */,
+			);
+			path = Location;
+			sourceTree = "<group>";
+		};
+		A74E9DE91950615F2671EB1D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				61E9E74AEB3E7EFD7E6D47B4 /* MapModel.swift */,
+				941DFE59680E503A3A8DB06B /* MapScreen.swift */,
+				940B55225B05B99493F907D4 /* SharingView.swift */,
+				22E2A088D7A5BA20D81BD73B /* SignInView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AF97B7AABB1A27449558D681 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA511CB3C76C5ACD8B47082E /* MapChat.app */,
+				121BC6ECDD58DC3009DB860F /* MapChatTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C26A5F678A8AF0B05CBA3BD6 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				29B9FDB25BFA33B8D07E62AB /* MapKitMapView.swift */,
+				828AA4A4D3A077BE17C449DF /* MapProvider.swift */,
+				457875211C47C3947F750C86 /* Polyline.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		C552F97898A80660FBAF9265 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				142D04A829E630048C6B7B23 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D3D0468782ED56B0613429CA /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B77A860D10F974009F01548B /* App.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9F8FC8CB7D8844FCBCBCC78E /* MapChat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47F357F71E1F312C55BF4B51 /* Build configuration list for PBXNativeTarget "MapChat" */;
+			buildPhases = (
+				FBB4750D2488E4F2B819DEDC /* Sources */,
+				B68E5E4423073B8B13C46210 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MapChat;
+			packageProductDependencies = (
+				D58D4EE96CAE3FF863B18D7F /* Supabase */,
+			);
+			productName = MapChat;
+			productReference = AA511CB3C76C5ACD8B47082E /* MapChat.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A53BB7C0AF2380610F6257D8 /* MapChatTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 19CACEE14A76D1518D96639A /* Build configuration list for PBXNativeTarget "MapChatTests" */;
+			buildPhases = (
+				8405B499B6552340F927D55C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C872A741FFF302EEC0DED31B /* PBXTargetDependency */,
+			);
+			name = MapChatTests;
+			packageProductDependencies = (
+			);
+			productName = MapChatTests;
+			productReference = 121BC6ECDD58DC3009DB860F /* MapChatTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EFA7F0FB6732CB09FC3783FF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = E2D713059579264A70C292C0 /* Build configuration list for PBXProject "MapChat" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 44BA510A7E9CD2DB5502A5AC;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7DA49EA37AF25DC40CBE55C4 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = AF97B7AABB1A27449558D681 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9F8FC8CB7D8844FCBCBCC78E /* MapChat */,
+				A53BB7C0AF2380610F6257D8 /* MapChatTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8405B499B6552340F927D55C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D72DFA802414D2A0DFED8DCB /* ParsingTests.swift in Sources */,
+				4362DAD8C385CD88FA6389F5 /* RouteClientTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FBB4750D2488E4F2B819DEDC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BA919B68BAC1DD3491B2D23 /* AppConfig.swift in Sources */,
+				EFB9F542D8F2BA0239B5B7F9 /* LocationReporter.swift in Sources */,
+				31D591E12568AE019B0D84CF /* MapChatApp.swift in Sources */,
+				374B1DE1F2AB1A88A7B8D666 /* MapKitMapView.swift in Sources */,
+				61CC052530A5651FE06425EF /* MapModel.swift in Sources */,
+				DCD937873E27E8AAFA0C4904 /* MapProvider.swift in Sources */,
+				C320744A2DADC471F0B62EEE /* MapScreen.swift in Sources */,
+				0959D63CBE719A11CCF130D7 /* Models.swift in Sources */,
+				0FEF18BF412AB8F06F0E1290 /* Polyline.swift in Sources */,
+				E9B87318FE0606D0FD394D54 /* RouteClient.swift in Sources */,
+				D28CB4CDCEA7C47AFDF500E6 /* SharingView.swift in Sources */,
+				636DE8A5C262CC50D9CFDCDE /* SignInView.swift in Sources */,
+				6722542F21749CF787E2FCE5 /* SupabaseService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C872A741FFF302EEC0DED31B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9F8FC8CB7D8844FCBCBCC78E /* MapChat */;
+			targetProxy = 4F3EA8652346D45327CECB03 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		79324F2AF4E8E1AA9FF2B91B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		87A40971CDC764984B5964A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B77A860D10F974009F01548B /* App.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MapChat/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = edu.unc.mapchat.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BBE12D9AA237009AF963B8DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = edu.unc.mapchat.MapChatTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MapChat.app/MapChat";
+			};
+			name = Release;
+		};
+		C3F89272FEA620218FE3204B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		CC198CB33C8A8E98C8698F52 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = edu.unc.mapchat.MapChatTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MapChat.app/MapChat";
+			};
+			name = Debug;
+		};
+		DEE4277CC806E9C1FAB55725 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B77A860D10F974009F01548B /* App.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MapChat/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = edu.unc.mapchat.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		19CACEE14A76D1518D96639A /* Build configuration list for PBXNativeTarget "MapChatTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC198CB33C8A8E98C8698F52 /* Debug */,
+				BBE12D9AA237009AF963B8DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		47F357F71E1F312C55BF4B51 /* Build configuration list for PBXNativeTarget "MapChat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				87A40971CDC764984B5964A3 /* Debug */,
+				DEE4277CC806E9C1FAB55725 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E2D713059579264A70C292C0 /* Build configuration list for PBXProject "MapChat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79324F2AF4E8E1AA9FF2B91B /* Debug */,
+				C3F89272FEA620218FE3204B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7DA49EA37AF25DC40CBE55C4 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.20.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D58D4EE96CAE3FF863B18D7F /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7DA49EA37AF25DC40CBE55C4 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = EFA7F0FB6732CB09FC3783FF /* Project object */;
+}

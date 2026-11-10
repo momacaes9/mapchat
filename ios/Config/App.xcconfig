@@ -1,0 +1,7 @@
+// Non-secret defaults for the local stack (Simulator talks to the Mac's localhost).
+// Real/hosted values go in Secrets.xcconfig, which is gitignored.
+SUPABASE_URL = http:/$()/127.0.0.1:54321
+ROUTING_URL = http:/$()/127.0.0.1:8787
+SUPABASE_ANON_KEY =
+
+#include? "Secrets.xcconfig"

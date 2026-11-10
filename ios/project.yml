@@ -1,0 +1,77 @@
+name: MapChat
+options:
+  bundleIdPrefix: edu.unc.mapchat
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.20.0
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  MapChat:
+    type: application
+    platform: iOS
+    sources: [MapChat]
+    configFiles:
+      Debug: Config/App.xcconfig
+      Release: Config/App.xcconfig
+    dependencies:
+      - package: Supabase
+        product: Supabase
+    info:
+      path: MapChat/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: MapChat
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # Values come from Config/App.xcconfig (+ gitignored Secrets.xcconfig).
+        SUPABASE_URL: $(SUPABASE_URL)
+        SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
+        ROUTING_URL: $(ROUTING_URL)
+        CFBundleURLTypes:
+          - CFBundleURLName: edu.unc.mapchat.auth
+            CFBundleURLSchemes: [mapchat]
+        NSLocationWhenInUseUsageDescription: >-
+          MapChat shows your position on the map and, only if you choose to share,
+          lets the people you approved see where you are.
+        NSLocationAlwaysAndWhenInUseUsageDescription: >-
+          With "Always", MapChat keeps your shared location fresh for the people you
+          approved even when the app is closed. You can pause or stop sharing any time
+          in the Sharing tab.
+        NSMotionUsageDescription: >-
+          MapChat uses the barometer to estimate which floor you are on inside campus
+          buildings. Only people you approved, and only if you allow floor sharing,
+          can see it.
+        UIBackgroundModes: [location]
+        NSAppTransportSecurity:
+          # Allows http:// to 127.0.0.1 / localhost for local Supabase in the Simulator.
+          NSAllowsLocalNetworking: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: edu.unc.mapchat.app
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGNING_ALLOWED: NO
+  MapChatTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [MapChatTests]
+    dependencies:
+      - target: MapChat
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGNING_ALLOWED: NO
+schemes:
+  MapChat:
+    build:
+      targets:
+        MapChat: all
+        MapChatTests: [test]
+    test:
+      targets: [MapChatTests]
