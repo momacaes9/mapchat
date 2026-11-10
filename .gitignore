@@ -38,3 +38,7 @@ xcuserdata/
 .DS_Store
 .idea/
 .vscode/
+
+# ---- Valhalla tiles and OSM extracts (large, regenerable) ----
+infra/valhalla/custom_files/
+*.osm.pbf

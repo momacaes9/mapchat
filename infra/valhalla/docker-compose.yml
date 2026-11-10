@@ -1,0 +1,30 @@
+# Local Valhalla routing engine (free, open source) for pedestrian routing.
+#
+#   ./infra/valhalla/fetch_osm.sh          # download the North Carolina extract (~430 MB)
+#   docker compose -f infra/valhalla/docker-compose.yml up -d
+#
+# The first start builds routing tiles from the .pbf (several minutes);
+# later starts reuse the tiles in custom_files/ (gitignored).
+# Map data © OpenStreetMap contributors, ODbL.
+services:
+  valhalla:
+    image: ghcr.io/valhalla/valhalla-scripted:3.9.1
+    container_name: mapchat-valhalla
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./custom_files:/custom_files
+    environment:
+      # Build from the local .pbf in custom_files/ instead of downloading.
+      - tile_urls=
+      - use_tiles_ignore_pbf=True
+      - force_rebuild=False
+      - serve_tiles=True
+      # Elevation data is a large extra download; skipped for the MVP, so
+      # `use_hills` has no effect until it is enabled.
+      - build_elevation=False
+      - build_admins=True
+      - build_time_zones=True
+      - build_transit=False
+      - server_threads=4
+    restart: unless-stopped
