@@ -73,4 +73,4 @@ deleted grants; owner-only activation; no cross-user writes; precision).
 | R6 | A requester picks `precision`/`allow_floor` on a *pending* request, and the owner accepts them as they are. | Low (UX) | The owner sees and can change both in the Sharing tab; consider forcing `building` until the owner chooses. |
 | R7 | The local stack uses well-known dev keys (`supabase status`). | None locally | Never reuse them; a hosted project gets its own keys (in GitHub secrets and gitignored files only). |
 | R8 | The iOS `NSAllowsLocalNetworking` exception allows http to localhost. | None in production builds talking to https | Keep it (it doesn't relax ATS for the internet). |
-| R9 | Branch protection on `main` is not enabled. | Medium (process) | Settings → Branches: require PRs and the `CI` checks (`backend`, `agent`, `ios`) to pass. |
+| R9 | ~~Branch protection on `main` is not enabled.~~ **Done 2026-11-10:** PR required, the 3 CI checks required and up to date, no force pushes or deletion. Admin bypass left on for emergencies. | — | Optionally set `enforce_admins` once you're comfortable with the PR flow. |
