@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		045674669112E33DCB4824A3 /* MockSupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1790630167C527129DBFCA27 /* MockSupabaseService.swift */; };
 		0959D63CBE719A11CCF130D7 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105248F0381C4522A22B6AF3 /* Models.swift */; };
 		0FEF18BF412AB8F06F0E1290 /* Polyline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457875211C47C3947F750C86 /* Polyline.swift */; };
 		31D591E12568AE019B0D84CF /* MapChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC14A37BD434EE6AC772F5C9 /* MapChatApp.swift */; };
@@ -17,6 +18,9 @@
 		61CC052530A5651FE06425EF /* MapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9E74AEB3E7EFD7E6D47B4 /* MapModel.swift */; };
 		636DE8A5C262CC50D9CFDCDE /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E2A088D7A5BA20D81BD73B /* SignInView.swift */; };
 		6722542F21749CF787E2FCE5 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225BAF817CB8DC755640A7F5 /* SupabaseService.swift */; };
+		725BCBFDDAC4F00220D94FC8 /* OnboardingAndSharingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E2BC59F7A3685514904C95 /* OnboardingAndSharingUITests.swift */; };
+		943CD7CC70C9F302CAAF29F8 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E58CF3DBAB843332AEE699CA /* OnboardingView.swift */; };
+		B317E3502E75496039DDCE4F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADA822EE19260BAF313C4CA /* SettingsView.swift */; };
 		C320744A2DADC471F0B62EEE /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 941DFE59680E503A3A8DB06B /* MapScreen.swift */; };
 		D28CB4CDCEA7C47AFDF500E6 /* SharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940B55225B05B99493F907D4 /* SharingView.swift */; };
 		D72DFA802414D2A0DFED8DCB /* ParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A122D588C76BBEA2D9566C1 /* ParsingTests.swift */; };
@@ -26,6 +30,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3CFD3E050C1E2BC6FC5DE7F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFA7F0FB6732CB09FC3783FF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9F8FC8CB7D8844FCBCBCC78E;
+			remoteInfo = MapChat;
+		};
 		4F3EA8652346D45327CECB03 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EFA7F0FB6732CB09FC3783FF /* Project object */;
@@ -36,9 +47,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		06CFADFB4A8296CD52A4C96F /* MapChatUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MapChatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0ADA822EE19260BAF313C4CA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		105248F0381C4522A22B6AF3 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		121BC6ECDD58DC3009DB860F /* MapChatTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MapChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		142D04A829E630048C6B7B23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1790630167C527129DBFCA27 /* MockSupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSupabaseService.swift; sourceTree = "<group>"; };
+		20E2BC59F7A3685514904C95 /* OnboardingAndSharingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAndSharingUITests.swift; sourceTree = "<group>"; };
 		225BAF817CB8DC755640A7F5 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		22E2A088D7A5BA20D81BD73B /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		29B9FDB25BFA33B8D07E62AB /* MapKitMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitMapView.swift; sourceTree = "<group>"; };
@@ -54,6 +69,7 @@
 		B77A860D10F974009F01548B /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 		CDFC137F75819DC5919F533B /* LocationReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationReporter.swift; sourceTree = "<group>"; };
 		DB7183358861EE38F227572A /* RouteClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteClient.swift; sourceTree = "<group>"; };
+		E58CF3DBAB843332AEE699CA /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		FC14A37BD434EE6AC772F5C9 /* MapChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapChatApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,6 +101,7 @@
 		244138BBE62E4669D4722AA5 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				1790630167C527129DBFCA27 /* MockSupabaseService.swift */,
 				105248F0381C4522A22B6AF3 /* Models.swift */,
 				DB7183358861EE38F227572A /* RouteClient.swift */,
 				225BAF817CB8DC755640A7F5 /* SupabaseService.swift */,
@@ -98,6 +115,7 @@
 				D3D0468782ED56B0613429CA /* Config */,
 				22D0A76DC6EC19C876329012 /* MapChat */,
 				684AF0EA169F47C2526C5660 /* MapChatTests */,
+				7C7529F599F7681E0554BFE1 /* MapChatUITests */,
 				AF97B7AABB1A27449558D681 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -120,6 +138,14 @@
 			path = MapChatTests;
 			sourceTree = "<group>";
 		};
+		7C7529F599F7681E0554BFE1 /* MapChatUITests */ = {
+			isa = PBXGroup;
+			children = (
+				20E2BC59F7A3685514904C95 /* OnboardingAndSharingUITests.swift */,
+			);
+			path = MapChatUITests;
+			sourceTree = "<group>";
+		};
 		9B47639660A07C5DE0BE9287 /* Location */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +159,8 @@
 			children = (
 				61E9E74AEB3E7EFD7E6D47B4 /* MapModel.swift */,
 				941DFE59680E503A3A8DB06B /* MapScreen.swift */,
+				E58CF3DBAB843332AEE699CA /* OnboardingView.swift */,
+				0ADA822EE19260BAF313C4CA /* SettingsView.swift */,
 				940B55225B05B99493F907D4 /* SharingView.swift */,
 				22E2A088D7A5BA20D81BD73B /* SignInView.swift */,
 			);
@@ -144,6 +172,7 @@
 			children = (
 				AA511CB3C76C5ACD8B47082E /* MapChat.app */,
 				121BC6ECDD58DC3009DB860F /* MapChatTests.xctest */,
+				06CFADFB4A8296CD52A4C96F /* MapChatUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -177,6 +206,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8ADFF8E20DCD6DF21BC6977F /* MapChatUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E963E45F26F4250AFA92BB64 /* Build configuration list for PBXNativeTarget "MapChatUITests" */;
+			buildPhases = (
+				1C498DD12FD4A64E46560540 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9AC8133A2341A3129E0B0368 /* PBXTargetDependency */,
+			);
+			name = MapChatUITests;
+			packageProductDependencies = (
+			);
+			productName = MapChatUITests;
+			productReference = 06CFADFB4A8296CD52A4C96F /* MapChatUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		9F8FC8CB7D8844FCBCBCC78E /* MapChat */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 47F357F71E1F312C55BF4B51 /* Build configuration list for PBXNativeTarget "MapChat" */;
@@ -223,6 +270,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					8ADFF8E20DCD6DF21BC6977F = {
+						TestTargetID = 9F8FC8CB7D8844FCBCBCC78E;
+					};
 				};
 			};
 			buildConfigurationList = E2D713059579264A70C292C0 /* Build configuration list for PBXProject "MapChat" */;
@@ -244,11 +294,20 @@
 			targets = (
 				9F8FC8CB7D8844FCBCBCC78E /* MapChat */,
 				A53BB7C0AF2380610F6257D8 /* MapChatTests */,
+				8ADFF8E20DCD6DF21BC6977F /* MapChatUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1C498DD12FD4A64E46560540 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				725BCBFDDAC4F00220D94FC8 /* OnboardingAndSharingUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8405B499B6552340F927D55C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -269,9 +328,12 @@
 				61CC052530A5651FE06425EF /* MapModel.swift in Sources */,
 				DCD937873E27E8AAFA0C4904 /* MapProvider.swift in Sources */,
 				C320744A2DADC471F0B62EEE /* MapScreen.swift in Sources */,
+				045674669112E33DCB4824A3 /* MockSupabaseService.swift in Sources */,
 				0959D63CBE719A11CCF130D7 /* Models.swift in Sources */,
+				943CD7CC70C9F302CAAF29F8 /* OnboardingView.swift in Sources */,
 				0FEF18BF412AB8F06F0E1290 /* Polyline.swift in Sources */,
 				E9B87318FE0606D0FD394D54 /* RouteClient.swift in Sources */,
+				B317E3502E75496039DDCE4F /* SettingsView.swift in Sources */,
 				D28CB4CDCEA7C47AFDF500E6 /* SharingView.swift in Sources */,
 				636DE8A5C262CC50D9CFDCDE /* SignInView.swift in Sources */,
 				6722542F21749CF787E2FCE5 /* SupabaseService.swift in Sources */,
@@ -281,6 +343,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		9AC8133A2341A3129E0B0368 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9F8FC8CB7D8844FCBCBCC78E /* MapChat */;
+			targetProxy = 3CFD3E050C1E2BC6FC5DE7F9 /* PBXContainerItemProxy */;
+		};
 		C872A741FFF302EEC0DED31B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 9F8FC8CB7D8844FCBCBCC78E /* MapChat */;
@@ -289,6 +356,42 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		05ABB7A028815FEDD87D3C10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = edu.unc.mapchat.MapChatUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MapChat;
+			};
+			name = Debug;
+		};
+		60BF8396B3DBB04585B7C03E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = edu.unc.mapchat.MapChatUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MapChat;
+			};
+			name = Release;
+		};
 		79324F2AF4E8E1AA9FF2B91B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -512,6 +615,15 @@
 			buildConfigurations = (
 				79324F2AF4E8E1AA9FF2B91B /* Debug */,
 				C3F89272FEA620218FE3204B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E963E45F26F4250AFA92BB64 /* Build configuration list for PBXNativeTarget "MapChatUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05ABB7A028815FEDD87D3C10 /* Debug */,
+				60BF8396B3DBB04585B7C03E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -35,6 +35,20 @@
                ReferencedContainer = "container:MapChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8ADFF8E20DCD6DF21BC6977F"
+               BuildableName = "MapChatUITests.xctest"
+               BlueprintName = "MapChatUITests"
+               ReferencedContainer = "container:MapChat.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -61,6 +75,17 @@
                BlueprintIdentifier = "A53BB7C0AF2380610F6257D8"
                BuildableName = "MapChatTests.xctest"
                BlueprintName = "MapChatTests"
+               ReferencedContainer = "container:MapChat.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8ADFF8E20DCD6DF21BC6977F"
+               BuildableName = "MapChatUITests.xctest"
+               BlueprintName = "MapChatUITests"
                ReferencedContainer = "container:MapChat.xcodeproj">
             </BuildableReference>
          </TestableReference>

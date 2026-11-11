@@ -67,11 +67,23 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGNING_ALLOWED: NO
+  MapChatUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [MapChatUITests]
+    dependencies:
+      - target: MapChat
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGNING_ALLOWED: NO
+        TEST_TARGET_NAME: MapChat
 schemes:
   MapChat:
     build:
       targets:
         MapChat: all
         MapChatTests: [test]
+        MapChatUITests: [test]
     test:
-      targets: [MapChatTests]
+      targets: [MapChatTests, MapChatUITests]
