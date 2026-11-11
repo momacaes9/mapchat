@@ -59,3 +59,41 @@ final class ModelParsingTests: XCTestCase {
         XCTAssertFalse(LocationReporter.shouldUpload(new: bad, last: nil, now: now))
     }
 }
+
+final class SharingStateTests: XCTestCase {
+    func testIndicatorLabels() {
+        XCTAssertEqual(SharingState().label, "Not sharing")
+        XCTAssertFalse(SharingState().isSharing)
+        XCTAssertEqual(SharingState(activeViewers: ["Ana"]).label, "Sharing ON with Ana")
+        XCTAssertEqual(SharingState(activeViewers: ["Ana", "Bo"]).label, "Sharing ON with 2 people")
+        let paused = SharingState(globallyPaused: true, activeViewers: ["Ana"])
+        XCTAssertEqual(paused.label, "Sharing paused")
+        XCTAssertFalse(paused.isSharing)
+    }
+
+    @MainActor
+    func testElevatorOnlyForcesStairFreeProfile() {
+        let model = MapModel()
+        model.profile = .fastest
+        UserDefaults.standard.set(true, forKey: Prefs.elevatorOnly)
+        XCTAssertEqual(model.effectiveProfile, .avoidStairs)
+        UserDefaults.standard.set(false, forKey: Prefs.elevatorOnly)
+        XCTAssertEqual(model.effectiveProfile, .fastest)
+    }
+
+    func testFriendlyErrors() {
+        XCTAssertEqual(MapModel.friendly(URLError(.notConnectedToInternet)), "Can't reach MapChat. Check your connection.")
+        XCTAssertEqual(MapModel.friendly(RouteError.notVisible), RouteError.notVisible.errorDescription)
+    }
+}
+
+final class MockBackendTests: XCTestCase {
+    @MainActor
+    func testMockRouteDecodes() async throws {
+        let mock = MockSupabaseService()
+        let r = try await mock.route(to: UUID(), profile: .avoidStairs, from: nil)
+        XCTAssertEqual(r.route.profile, "avoid_stairs")
+        XCTAssertEqual(r.route.indoor?.targetFloor, 3)
+        XCTAssertGreaterThan(Polyline.decode(r.route.shape).count, 2)
+    }
+}

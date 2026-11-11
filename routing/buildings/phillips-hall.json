@@ -1,0 +1,282 @@
+{
+  "building": "phillips-hall",
+  "name": "Phillips Hall",
+  "verified": false,
+  "notes": "TEMPLATE, NOT SURVEYED. Footprint and entrances from OSM way/44343443. Floors: 3 (osm:building:levels). Elevator core 'A' and stair core 'N' are ASSUMED to serve every floor; distances, timings and floor heights are placeholders. Entrance floor assumed to be floor 1.",
+  "floors": [
+    {
+      "level": 1,
+      "label": "1",
+      "height_m": 4
+    },
+    {
+      "level": 2,
+      "label": "2",
+      "height_m": 4
+    },
+    {
+      "level": 3,
+      "label": "3",
+      "height_m": 4
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ent-1",
+      "label": "entrance 1",
+      "lat": 35.9105324,
+      "lng": -79.0522339,
+      "step_free": false,
+      "source": "osm:node/576407661 (entrance=yes, stairs=yes, wheelchair=no)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-2",
+      "label": "entrance 2",
+      "lat": 35.9109081,
+      "lng": -79.0524455,
+      "step_free": true,
+      "source": "osm:node/576407697 (entrance=yes, stairs=no, wheelchair=yes)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-3",
+      "label": "entrance 3",
+      "lat": 35.9102564,
+      "lng": -79.052989,
+      "source": "osm:node/593870139 (entrance=yes, stairs=yes)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-4",
+      "label": "entrance 4",
+      "lat": 35.9109658,
+      "lng": -79.0528104,
+      "step_free": false,
+      "source": "osm:node/593870225 (entrance=yes, stairs=yes, wheelchair=no)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-5",
+      "label": "entrance 5",
+      "lat": 35.9105013,
+      "lng": -79.0527871,
+      "source": "osm:node/1194029691 (entrance=yes)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-6",
+      "label": "entrance 6",
+      "lat": 35.910265,
+      "lng": -79.0526944,
+      "step_free": true,
+      "source": "osm:node/1194029699 (entrance=yes, stairs=no, wheelchair=yes)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-7",
+      "label": "entrance 7",
+      "lat": 35.9104188,
+      "lng": -79.0527378,
+      "source": "osm:node/1194029722 (entrance=yes)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-8",
+      "label": "entrance 8",
+      "lat": 35.9106198,
+      "lng": -79.0525175,
+      "source": "osm:node/3713261875 (entrance=yes)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "ent-9",
+      "label": "entrance 9",
+      "lat": 35.9106307,
+      "lng": -79.0529463,
+      "source": "osm:node/14206302861 (entrance=yes)",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "hall-1",
+      "floor": 1,
+      "kind": "corridor",
+      "label": "floor 1 lobby"
+    },
+    {
+      "id": "elev-A-1",
+      "floor": 1,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-1",
+      "floor": 1,
+      "kind": "stairs",
+      "core": "N"
+    },
+    {
+      "id": "hall-2",
+      "floor": 2,
+      "kind": "corridor",
+      "label": "floor 2 lobby"
+    },
+    {
+      "id": "elev-A-2",
+      "floor": 2,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-2",
+      "floor": 2,
+      "kind": "stairs",
+      "core": "N"
+    },
+    {
+      "id": "hall-3",
+      "floor": 3,
+      "kind": "corridor",
+      "label": "floor 3 lobby"
+    },
+    {
+      "id": "elev-A-3",
+      "floor": 3,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-3",
+      "floor": 3,
+      "kind": "stairs",
+      "core": "N"
+    }
+  ],
+  "edges": [
+    {
+      "a": "ent-1",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-2",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-3",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-4",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-5",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-6",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-7",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-8",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "ent-9",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "hall-1",
+      "b": "elev-A-1",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-1",
+      "b": "stair-N-1",
+      "type": "corridor",
+      "meters": 20
+    },
+    {
+      "a": "elev-A-1",
+      "b": "elev-A-2",
+      "type": "elevator",
+      "seconds": 6
+    },
+    {
+      "a": "stair-N-1",
+      "b": "stair-N-2",
+      "type": "stairs",
+      "seconds": 15,
+      "steps": 24
+    },
+    {
+      "a": "hall-2",
+      "b": "elev-A-2",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-2",
+      "b": "stair-N-2",
+      "type": "corridor",
+      "meters": 20
+    },
+    {
+      "a": "elev-A-2",
+      "b": "elev-A-3",
+      "type": "elevator",
+      "seconds": 6
+    },
+    {
+      "a": "stair-N-2",
+      "b": "stair-N-3",
+      "type": "stairs",
+      "seconds": 15,
+      "steps": 24
+    },
+    {
+      "a": "hall-3",
+      "b": "elev-A-3",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-3",
+      "b": "stair-N-3",
+      "type": "corridor",
+      "meters": 20
+    }
+  ]
+}

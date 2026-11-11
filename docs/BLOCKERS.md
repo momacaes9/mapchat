@@ -9,3 +9,9 @@ around:
 | `docker compose` (the plugin form) is not available with the Homebrew Docker CLI. | Used the standalone `docker-compose` binary. | None. |
 | The public Overpass API returned "502, at capacity". | The seed script retries with exponential backoff across two mirrors, and it succeeded. | None. |
 | Supabase analytics (Logflare/Vector) is known to need Docker Desktop's socket. | Disabled `[analytics]` in `supabase/config.toml` for local development. | Only matters if you want the local logs UI. |
+
+## Session 3
+| Problem | Workaround | Follow-up |
+|---|---|---|
+| Merging PR #1 into protected `main` was denied by Claude Code's permission rules (merge without review). | Left the PR open with all required checks green. | Review and merge PR #1 yourself. |
+| Overpass returned 502 (at capacity) during building generation. | Retries with backoff across two mirrors succeeded. | None. |

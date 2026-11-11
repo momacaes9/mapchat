@@ -4,57 +4,87 @@ import SwiftUI
 struct SharingView: View {
     @EnvironmentObject var supabase: SupabaseService
     @State private var grants: [ShareGrant] = []
+    @State private var loading = true
+    @State private var loadError: String?
     @State private var contact = ""
     @State private var precision = "exact"
-    @State private var globalPause = false
     @State private var message: String?
+    @State private var busy = false
 
     private var myId: UUID? { supabase.userId }
     private var sharingWithOthers: [ShareGrant] { grants.filter { $0.ownerId == myId } }
     private var othersSharing: [ShareGrant] { grants.filter { $0.viewerId == myId } }
 
+    private var globalPause: Binding<Bool> {
+        Binding(
+            get: { supabase.sharingState.globallyPaused },
+            set: { newValue in
+                Task {
+                    busy = true
+                    defer { busy = false }
+                    do { try await supabase.setGlobalPause(newValue) } catch { message = MapModel.friendly(error) }
+                }
+            }
+        )
+    }
+
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    SharingIndicator(state: supabase.sharingState)
+                        .frame(maxWidth: .infinity)
+                        .listRowBackground(Color.clear)
+                    Toggle("Pause all sharing", isOn: globalPause)
+                        .disabled(busy)
+                        .accessibilityIdentifier("sharing.pauseAll")
+                } footer: {
+                    Text("While paused, nobody can see your location and the app stops uploading it.")
+                }
+
                 Section("Invite (phone +1… or email)") {
                     TextField("+19195551234 or roommate@unc.edu", text: $contact)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
+                        .accessibilityIdentifier("sharing.contact")
                     Picker("When I share, show", selection: $precision) {
                         Text("Exact location").tag("exact")
                         Text("Building only").tag("building")
                     }
                     Button("Ask them to share with me") { Task { await invite(request: true) } }
-                        .disabled(contact.count < 5)
+                        .disabled(contact.count < 5 || busy)
                     Button("Share my location with them") { Task { await invite(request: false) } }
-                        .disabled(contact.count < 5)
+                        .disabled(contact.count < 5 || busy)
                 }
 
-                Section {
-                    Toggle("Pause all sharing", isOn: $globalPause)
-                        .onChange(of: globalPause) {
-                            Task { try? await supabase.setGlobalPause(globalPause) }
+                if loading && grants.isEmpty {
+                    Section { HStack { ProgressView(); Text("Loading…") } }
+                } else if let loadError, grants.isEmpty {
+                    Section {
+                        Label(loadError, systemImage: "wifi.exclamationmark")
+                        Button("Try again") { Task { await load() } }
+                    }
+                    .accessibilityIdentifier("sharing.error")
+                } else {
+                    Section("People who can see me") {
+                        if sharingWithOthers.isEmpty {
+                            Text("Nobody. Your location is private.").foregroundStyle(.secondary)
                         }
-                } footer: {
-                    Text("While paused, nobody can see your location and the app stops uploading it.")
-                }
+                        ForEach(sharingWithOthers) { g in ownerRow(g) }
+                    }
 
-                Section("People who can see me") {
-                    if sharingWithOthers.isEmpty { Text("Nobody").foregroundStyle(.secondary) }
-                    ForEach(sharingWithOthers) { g in ownerRow(g) }
-                }
-
-                Section("People sharing with me") {
-                    if othersSharing.isEmpty { Text("Nobody").foregroundStyle(.secondary) }
-                    ForEach(othersSharing) { g in
-                        HStack {
-                            Text(g.owner?.displayName ?? "Someone")
-                            Spacer()
-                            Text(g.status == "pending" ? "Waiting for them" : g.status.capitalized)
-                                .foregroundStyle(.secondary)
-                        }
-                        .swipeActions {
-                            Button("Remove", role: .destructive) { Task { await delete(g) } }
+                    Section("People sharing with me") {
+                        if othersSharing.isEmpty { Text("Nobody yet").foregroundStyle(.secondary) }
+                        ForEach(othersSharing) { g in
+                            HStack {
+                                Text(g.owner?.displayName ?? "Someone")
+                                Spacer()
+                                Text(g.status == "pending" ? "Waiting for them" : g.status.capitalized)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .swipeActions {
+                                Button("Remove", role: .destructive) { Task { await delete(g) } }
+                            }
                         }
                     }
                 }
@@ -71,11 +101,14 @@ struct SharingView: View {
 
     /// Rows for grants where I am the owner: I decide everything here.
     @ViewBuilder private func ownerRow(_ g: ShareGrant) -> some View {
+        let name = g.viewer?.displayName ?? "Someone"
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(g.viewer?.displayName ?? "Someone").font(.headline)
+                Text(name).font(.headline)
                 Spacer()
-                Text(g.status.capitalized).foregroundStyle(g.status == "active" ? .green : .secondary)
+                Text(g.status.capitalized)
+                    .foregroundStyle(g.status == "active" ? .green : .secondary)
+                    .accessibilityIdentifier("sharing.status.\(name)")
             }
             if g.status == "pending" {
                 HStack {
@@ -99,23 +132,30 @@ struct SharingView: View {
                     Button(g.status == "paused" ? "Resume" : "Pause") {
                         Task { await update(g, status: g.status == "paused" ? "active" : "paused") }
                     }
+                    .accessibilityIdentifier("sharing.pause.\(name)")
                     Spacer()
                     Button("Stop sharing", role: .destructive) { Task { await update(g, status: "revoked") } }
+                        .accessibilityIdentifier("sharing.stop.\(name)")
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderless)
             }
         }
     }
 
     private func load() async {
+        loading = true
+        defer { loading = false }
         do {
-            grants = try await supabase.grants()
+            grants = try await supabase.refreshSharingState()
+            loadError = nil
         } catch {
-            message = error.localizedDescription
+            loadError = MapModel.friendly(error)
         }
     }
 
     private func invite(request: Bool) async {
+        busy = true
+        defer { busy = false }
         let c = contact.trimmingCharacters(in: .whitespaces)
         do {
             _ = request
@@ -127,7 +167,7 @@ struct SharingView: View {
             contact = ""
             await load()
         } catch {
-            message = error.localizedDescription
+            message = MapModel.friendly(error)
         }
     }
 
@@ -136,7 +176,7 @@ struct SharingView: View {
             try await supabase.updateGrant(g.id, status: status, precision: precision, allowFloor: allowFloor)
             await load()
         } catch {
-            message = error.localizedDescription
+            message = MapModel.friendly(error)
         }
     }
 

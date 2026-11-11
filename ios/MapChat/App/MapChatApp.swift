@@ -1,9 +1,32 @@
 import SwiftUI
 
+/// Launch arguments used by UI tests and demos:
+///   -mockBackend        in-memory backend, signed in, roommate "Ana" sharing
+///   -resetOnboarding    show the privacy onboarding again
+///   -skipOnboarding     mark onboarding as done
+///   -mockFriendsError   make the mock friends request fail
+///   -resetPrefs         clear device preferences (e.g. elevator-only)
+enum LaunchArgs {
+    static let args = ProcessInfo.processInfo.arguments
+    static var mockBackend: Bool { args.contains("-mockBackend") }
+}
+
 @main
 struct MapChatApp: App {
-    @StateObject private var supabase = SupabaseService.shared
-    @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var supabase: SupabaseService
+
+    init() {
+        if LaunchArgs.args.contains("-resetOnboarding") {
+            UserDefaults.standard.set(false, forKey: Prefs.onboardingDone)
+        }
+        if LaunchArgs.args.contains("-resetPrefs") {
+            UserDefaults.standard.removeObject(forKey: Prefs.elevatorOnly)
+        }
+        if LaunchArgs.args.contains("-skipOnboarding") {
+            UserDefaults.standard.set(true, forKey: Prefs.onboardingDone)
+        }
+        _supabase = StateObject(wrappedValue: LaunchArgs.mockBackend ? MockSupabaseService() : SupabaseService.shared)
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -16,9 +39,12 @@ struct MapChatApp: App {
 
 struct RootView: View {
     @EnvironmentObject var supabase: SupabaseService
+    @AppStorage(Prefs.onboardingDone) private var onboardingDone = false
 
     var body: some View {
-        if !AppConfig.shared.isConfigured {
+        if !onboardingDone {
+            OnboardingView { onboardingDone = true }
+        } else if !AppConfig.shared.isConfigured && !LaunchArgs.mockBackend {
             ContentUnavailableView(
                 "Not configured",
                 systemImage: "gearshape",
@@ -43,6 +69,8 @@ struct MainTabs: View {
                 .tabItem { Label("Map", systemImage: "map") }
             SharingView()
                 .tabItem { Label("Sharing", systemImage: "person.2") }
+            SettingsView()
+                .tabItem { Label("Settings", systemImage: "gearshape") }
         }
         .task { await model.start(supabase: supabase) }
         .onChange(of: scenePhase) {

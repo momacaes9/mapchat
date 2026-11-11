@@ -4,35 +4,47 @@ import SwiftUI
 /// State for the map screen: my position, friends, and the current route.
 @MainActor
 final class MapModel: ObservableObject {
+    enum LoadState: Equatable {
+        case loading
+        case loaded
+        case failed(String)
+    }
+
     @Published private(set) var friends: [Friend] = []
+    @Published private(set) var friendsState: LoadState = .loading
     @Published private(set) var route: RouteResponse?
     @Published private(set) var routeCoordinates: [CLLocationCoordinate2D] = []
     @Published var profile: RouteProfile = .avoidStairs
-    @Published var error: String?
-    @Published var isRouting = false
+    @Published var routeError: String?
+    @Published private(set) var routingTo: UUID?
 
     private(set) var reporter: LocationReporter?
     private var supabase: SupabaseService?
-    private var routeClient: RouteClient?
     private var pollTask: Task<Void, Never>?
+
+    /// Accessibility preference: when on, every route is stair-free.
+    var elevatorOnly: Bool { UserDefaults.standard.bool(forKey: Prefs.elevatorOnly) }
+    var effectiveProfile: RouteProfile { elevatorOnly ? .avoidStairs : profile }
 
     func start(supabase: SupabaseService) async {
         guard self.supabase == nil else { return }
         self.supabase = supabase
-        routeClient = RouteClient(baseURL: supabase.config.routingURL) { try await supabase.accessToken() }
 
         let reporter = LocationReporter { loc, relAlt, pressure in
-            let floor = loc.floor?.level
             try? await supabase.upload(
                 lat: loc.coordinate.latitude, lng: loc.coordinate.longitude,
-                accuracy: loc.horizontalAccuracy, appleFloor: floor,
+                accuracy: loc.horizontalAccuracy, appleFloor: loc.floor?.level,
                 relAltitude: relAlt, pressureKPa: pressure, at: loc.timestamp
             )
         }
         self.reporter = reporter
-        reporter.requestPermission()
+        // The mock backend (UI tests/demos) never triggers system permission prompts.
+        if !LaunchArgs.mockBackend { reporter.requestPermission() }
 
         await refreshFriends()
+        try? await supabase.refreshSharingState()
+        reporter.isSharingPaused = supabase.sharingState.globallyPaused
+
         // Live: a private Realtime ping tells us a friend moved; we refetch
         // through visible_friends() so precision rules always apply.
         await supabase.startFriendUpdates { [weak self] in
@@ -49,11 +61,17 @@ final class MapModel: ObservableObject {
 
     func refreshFriends() async {
         guard let supabase else { return }
+        if friends.isEmpty { friendsState = .loading }
         do {
             friends = try await supabase.friends()
+            friendsState = .loaded
         } catch {
-            self.error = error.localizedDescription
+            friendsState = .failed(Self.friendly(error))
         }
+    }
+
+    func syncPause() {
+        reporter?.isSharingPaused = supabase?.sharingState.globallyPaused ?? false
     }
 
     func scenePhaseChanged(_ phase: ScenePhase) {
@@ -80,28 +98,37 @@ final class MapModel: ObservableObject {
         return list
     }
 
-    static func subtitle(for f: Friend) -> String {
+    static func subtitle(for f: Friend, now: Date = Date()) -> String {
         var parts: [String] = []
         if let place = f.placeName { parts.append(place) }
         if let floor = f.floor { parts.append("floor \(floor)") }
-        let mins = Int(Date().timeIntervalSince(f.recordedAt) / 60)
+        let mins = Int(now.timeIntervalSince(f.recordedAt) / 60)
         parts.append(mins < 1 ? "just now" : "\(mins) min ago")
         return parts.joined(separator: " · ")
     }
 
+    nonisolated static func friendly(_ error: Error) -> String {
+        if let e = error as? RouteError { return e.errorDescription ?? "Something went wrong." }
+        if (error as? URLError)?.code == .notConnectedToInternet || (error as? URLError)?.code == .cannotConnectToHost {
+            return "Can't reach MapChat. Check your connection."
+        }
+        return "Something went wrong. Pull to retry."
+    }
+
     func routeTo(_ friend: Friend) async {
-        guard let routeClient else { return }
-        isRouting = true
-        defer { isRouting = false }
+        guard let supabase else { return }
+        routingTo = friend.userId
+        defer { routingTo = nil }
         do {
-            let r = try await routeClient.route(to: friend.userId, profile: profile, from: reporter?.lastLocation?.coordinate)
+            let from = reporter?.lastLocation?.coordinate
+            let r = try await supabase.route(to: friend.userId, profile: effectiveProfile, from: from)
             route = r
             routeCoordinates = Polyline.decode(r.route.shape)
-            error = nil
+            routeError = nil
         } catch {
             route = nil
             routeCoordinates = []
-            self.error = error.localizedDescription
+            routeError = Self.friendly(error)
         }
     }
 

@@ -64,6 +64,20 @@ SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_ANON_KEY=<from supabase status> bun
 cd ../agent && cp .env.example .env && bun install && bun test
 ```
 
+### Demo mode
+
+```sh
+./scripts/demo.sh            # starts everything, seeds 2 demo accounts, Ana walks to you
+./scripts/demo.sh --check    # 20-second smoke test
+```
+
+Sign in to the Simulator app as `demo-you@example.test` (the code is in Mailpit,
+http://127.0.0.1:54324) to watch Ana move from Davis Library (floor 3 → 1) to
+Hinton James along a stair-free route. The script prints how to run the agent
+with a mock iMessage, which sends "Ana is approaching you" as she gets close.
+For a UI-only demo without any backend, launch the app with the
+`-mockBackend` argument (Xcode → Scheme → Arguments).
+
 ### 3. Stop everything
 
 ```sh

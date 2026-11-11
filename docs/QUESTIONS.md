@@ -39,3 +39,19 @@ Answer inline or in chat. Nothing here blocks the local work.
 8. **Home building for alerts:** set `OWNER_HOME_LAT`, `OWNER_HOME_LNG` and
    `OWNER_HOME_NAME` (your dorm) for "approaching your building" alerts when
    you're not there.
+
+## Session 3 (2026-11-10)
+9. **Your message was cut off** at step 5: "Demo mode: a seeded demo script
+   that starts the whole stack and simulates…". I assumed it means *simulates
+   your roommate walking across campus (and changing floors), so the map, the
+   route and the agent alerts update live*. Tell me if you meant something
+   else.
+10. **Branch protection** now requires a PR. I work on the `session-3`
+    branch and merge it through a PR once CI is green. Do you want
+    `enforce_admins` on too (no bypass even for you)?
+11. **Indoor maps need a walk-through.** OSM has no entrance mapped for the
+    Student Union or Ram Village 1–3, so each has one *estimated* entrance (the
+    southernmost corner of the outline). Hinton James' 2 entrances have no
+    step-free info. Every building assumes one elevator (A) and one stairwell
+    (N) on every floor. Which of these buildings do you actually use, so I can
+    prioritize them for a survey checklist?

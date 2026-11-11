@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import Supabase
 
@@ -5,21 +6,26 @@ import Supabase
 /// Row Level Security decides what is visible. Other people's locations are
 /// only read through the `visible_friends()` RPC.
 @MainActor
-final class SupabaseService: ObservableObject {
+class SupabaseService: ObservableObject {
     static let shared = SupabaseService(config: .shared)
 
     let client: SupabaseClient
     let config: AppConfig
 
-    @Published private(set) var userId: UUID?
-    @Published private(set) var email: String?
+    @Published var userId: UUID?
+    @Published var email: String?
+    /// What the current user is sharing; drives the "Sharing is ON" indicator.
+    @Published var sharingState = SharingState()
 
     private var friendChannel: RealtimeChannelV2?
 
-    init(config: AppConfig) {
+    init(config: AppConfig, observeAuth: Bool = true) {
         self.config = config
-        client = SupabaseClient(supabaseURL: config.supabaseURL, supabaseKey: config.supabaseAnonKey)
-        Task { await self.observeAuth() }
+        client = SupabaseClient(
+            supabaseURL: config.supabaseURL,
+            supabaseKey: config.supabaseAnonKey.isEmpty ? "unconfigured" : config.supabaseAnonKey
+        )
+        if observeAuth { Task { await self.observeAuth() } }
     }
 
     // MARK: Auth (email one-time code / magic link)
@@ -142,6 +148,43 @@ final class SupabaseService: ObservableObject {
     func setGlobalPause(_ paused: Bool) async throws {
         guard let userId else { return }
         try await client.from("profiles").update(["sharing_paused": paused]).eq("id", value: userId).execute()
+        sharingState.globallyPaused = paused
+    }
+
+    struct MyProfile: Decodable {
+        let display_name: String
+        let sharing_paused: Bool
+    }
+
+    func myProfile() async throws -> MyProfile? {
+        guard let userId else { return nil }
+        let data = try await client.from("profiles").select("display_name, sharing_paused")
+            .eq("id", value: userId).execute().data
+        return try JSONCoding.decoder.decode([MyProfile].self, from: data).first
+    }
+
+    /// Reloads grants + pause flag and updates `sharingState`.
+    @discardableResult
+    func refreshSharingState() async throws -> [ShareGrant] {
+        let all = try await grants()
+        let profile = try await myProfile()
+        sharingState = SharingState(
+            globallyPaused: profile?.sharing_paused ?? false,
+            activeViewers: all.filter { $0.ownerId == userId && $0.status == "active" }
+                .compactMap { $0.viewer?.displayName },
+            pendingRequests: all.filter { $0.ownerId == userId && $0.status == "pending" }.count
+        )
+        return all
+    }
+
+    // MARK: Routing
+
+    func route(to userId: UUID, profile: RouteProfile, from: CLLocationCoordinate2D?) async throws -> RouteResponse {
+        let client = RouteClient(baseURL: config.routingURL) { [weak self] in
+            guard let self else { throw RouteError.notSignedIn }
+            return try await self.accessToken()
+        }
+        return try await client.route(to: userId, profile: profile, from: from)
     }
 
     // MARK: Realtime
@@ -165,5 +208,23 @@ final class SupabaseService: ObservableObject {
     func stopFriendUpdates() async {
         if let friendChannel { await client.removeChannel(friendChannel) }
         friendChannel = nil
+    }
+}
+
+/// Summary of what the signed-in user shares, for the always-visible indicator.
+struct SharingState: Equatable {
+    var globallyPaused = false
+    var activeViewers: [String] = []
+    var pendingRequests = 0
+
+    var isSharing: Bool { !globallyPaused && !activeViewers.isEmpty }
+
+    var label: String {
+        if globallyPaused { return "Sharing paused" }
+        switch activeViewers.count {
+        case 0: return "Not sharing"
+        case 1: return "Sharing ON with \(activeViewers[0])"
+        default: return "Sharing ON with \(activeViewers.count) people"
+        }
     }
 }
