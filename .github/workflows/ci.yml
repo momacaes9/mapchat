@@ -70,6 +70,20 @@ jobs:
         working-directory: agent
         run: bun audit
 
+  ml:
+    name: Floor estimation (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - working-directory: ml
+        run: |
+          pip install -r requirements.txt
+          python -m pytest -q
+
   ios:
     name: iOS build + unit tests
     runs-on: macos-latest

@@ -44,3 +44,6 @@ infra/valhalla/custom_files/
 *.osm.pbf
 ios/.spm/
 ios/build/
+
+# ---- ML data ----
+ml/*.csv
