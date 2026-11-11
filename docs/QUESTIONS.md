@@ -49,3 +49,9 @@ Answer inline or in chat. Nothing here blocks the local work.
 10. **Branch protection** now requires a PR. I work on the `session-3`
     branch and merge it through a PR once CI is green. Do you want
     `enforce_admins` on too (no bypass even for you)?
+11. **Indoor maps need a walk-through.** OSM has no entrance mapped for the
+    Student Union or Ram Village 1–3, so each has one *estimated* entrance (the
+    southernmost corner of the outline). Hinton James' 2 entrances have no
+    step-free info. Every building assumes one elevator (A) and one stairwell
+    (N) on every floor. Which of these buildings do you actually use, so I can
+    prioritize them for a survey checklist?

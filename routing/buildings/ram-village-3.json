@@ -1,0 +1,254 @@
+{
+  "building": "ram-village-3",
+  "name": "Ram Village Building 3",
+  "verified": false,
+  "notes": "TEMPLATE, NOT SURVEYED. Footprint and entrances from OSM way/96059144 (no entrance mapped in OSM: ent-1 is an ESTIMATE). Floors: 5 (best guess). Elevator core 'A' and stair core 'N' are ASSUMED to serve every floor; distances, timings and floor heights are placeholders. Entrance floor assumed to be floor 1.",
+  "floors": [
+    {
+      "level": 1,
+      "label": "1",
+      "height_m": 3
+    },
+    {
+      "level": 2,
+      "label": "2",
+      "height_m": 3
+    },
+    {
+      "level": 3,
+      "label": "3",
+      "height_m": 3
+    },
+    {
+      "level": 4,
+      "label": "4",
+      "height_m": 3
+    },
+    {
+      "level": 5,
+      "label": "5",
+      "height_m": 3
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ent-1",
+      "label": "entrance (estimated)",
+      "lat": 35.9021942,
+      "lng": -79.0467264,
+      "source": "estimated: no OSM entrance on this building",
+      "floor": 1,
+      "kind": "entrance"
+    },
+    {
+      "id": "hall-1",
+      "floor": 1,
+      "kind": "corridor",
+      "label": "floor 1 lobby"
+    },
+    {
+      "id": "elev-A-1",
+      "floor": 1,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-1",
+      "floor": 1,
+      "kind": "stairs",
+      "core": "N"
+    },
+    {
+      "id": "hall-2",
+      "floor": 2,
+      "kind": "corridor",
+      "label": "floor 2 lobby"
+    },
+    {
+      "id": "elev-A-2",
+      "floor": 2,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-2",
+      "floor": 2,
+      "kind": "stairs",
+      "core": "N"
+    },
+    {
+      "id": "hall-3",
+      "floor": 3,
+      "kind": "corridor",
+      "label": "floor 3 lobby"
+    },
+    {
+      "id": "elev-A-3",
+      "floor": 3,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-3",
+      "floor": 3,
+      "kind": "stairs",
+      "core": "N"
+    },
+    {
+      "id": "hall-4",
+      "floor": 4,
+      "kind": "corridor",
+      "label": "floor 4 lobby"
+    },
+    {
+      "id": "elev-A-4",
+      "floor": 4,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-4",
+      "floor": 4,
+      "kind": "stairs",
+      "core": "N"
+    },
+    {
+      "id": "hall-5",
+      "floor": 5,
+      "kind": "corridor",
+      "label": "floor 5 lobby"
+    },
+    {
+      "id": "elev-A-5",
+      "floor": 5,
+      "kind": "elevator",
+      "core": "A"
+    },
+    {
+      "id": "stair-N-5",
+      "floor": 5,
+      "kind": "stairs",
+      "core": "N"
+    }
+  ],
+  "edges": [
+    {
+      "a": "ent-1",
+      "b": "hall-1",
+      "type": "door",
+      "meters": 20
+    },
+    {
+      "a": "hall-1",
+      "b": "elev-A-1",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-1",
+      "b": "stair-N-1",
+      "type": "corridor",
+      "meters": 20
+    },
+    {
+      "a": "elev-A-1",
+      "b": "elev-A-2",
+      "type": "elevator",
+      "seconds": 6
+    },
+    {
+      "a": "stair-N-1",
+      "b": "stair-N-2",
+      "type": "stairs",
+      "seconds": 15,
+      "steps": 18
+    },
+    {
+      "a": "hall-2",
+      "b": "elev-A-2",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-2",
+      "b": "stair-N-2",
+      "type": "corridor",
+      "meters": 20
+    },
+    {
+      "a": "elev-A-2",
+      "b": "elev-A-3",
+      "type": "elevator",
+      "seconds": 6
+    },
+    {
+      "a": "stair-N-2",
+      "b": "stair-N-3",
+      "type": "stairs",
+      "seconds": 15,
+      "steps": 18
+    },
+    {
+      "a": "hall-3",
+      "b": "elev-A-3",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-3",
+      "b": "stair-N-3",
+      "type": "corridor",
+      "meters": 20
+    },
+    {
+      "a": "elev-A-3",
+      "b": "elev-A-4",
+      "type": "elevator",
+      "seconds": 6
+    },
+    {
+      "a": "stair-N-3",
+      "b": "stair-N-4",
+      "type": "stairs",
+      "seconds": 15,
+      "steps": 18
+    },
+    {
+      "a": "hall-4",
+      "b": "elev-A-4",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-4",
+      "b": "stair-N-4",
+      "type": "corridor",
+      "meters": 20
+    },
+    {
+      "a": "elev-A-4",
+      "b": "elev-A-5",
+      "type": "elevator",
+      "seconds": 6
+    },
+    {
+      "a": "stair-N-4",
+      "b": "stair-N-5",
+      "type": "stairs",
+      "seconds": 15,
+      "steps": 18
+    },
+    {
+      "a": "hall-5",
+      "b": "elev-A-5",
+      "type": "elevator_wait",
+      "seconds": 30
+    },
+    {
+      "a": "hall-5",
+      "b": "stair-N-5",
+      "type": "corridor",
+      "meters": 20
+    }
+  ]
+}
