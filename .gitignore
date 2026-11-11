@@ -47,3 +47,4 @@ ios/build/
 
 # ---- ML data ----
 ml/*.csv
+.demo-logs/
