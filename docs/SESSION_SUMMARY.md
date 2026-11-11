@@ -1,8 +1,10 @@
 # Session summary — 2026-11-10 (session 3, 2 h, autonomous)
 
 Everything ran locally and free. Nothing needed your phone, secrets or dorm
-name. Work landed through **PR #1** (`session-3` → `main`), because `main`
-is now protected.
+name. All work is on **PR #1** (`session-3` → `main`): all 4 required checks
+pass. **Merging is waiting for you**, because my automatic merge was blocked by a
+permission rule (merging to protected `main` without review). Review it, then
+click *Merge pull request* (or run `gh pr merge 1 --merge --delete-branch`).
 
 ## Done
 
